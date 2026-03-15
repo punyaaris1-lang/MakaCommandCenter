@@ -17,19 +17,32 @@
         .main-panel { padding: 15px; }
         .tab-content { display: none; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; animation: fadeIn 0.3s; }
         .tab-content.active { display: block; }
-        .tab-content h3 { margin-top: 0; border-bottom: 2px solid #f4f7f6; padding-bottom: 10px; }
+        .tab-content h3 { margin-top: 0; border-bottom: 2px solid #f4f7f6; padding-bottom: 10px; color: #1e293b; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* PETA CSS */
         #map-container { position: relative; width: 100%; height: 50vh; border-radius: 10px; border: 2px solid #e2e8f0; overflow: hidden; z-index: 1; }
         #map { width: 100%; height: 100%; }
         .radar-overlay { position: absolute; top: 50%; left: 50%; width: 250%; height: 250%; background: conic-gradient(from 0deg, transparent 70%, rgba(37,99,235,0.3) 100%); border-radius: 50%; transform: translate(-50%,-50%); animation: scan 3s linear infinite; pointer-events: none; display: none; z-index: 1000; }
         @keyframes scan { 100% { transform: translate(-50%,-50%) rotate(360deg); } }
-        
         .controls { margin-top: 15px; text-align: center; }
         .btn-radar { background: #2563eb; color: white; border: none; padding: 12px 25px; cursor: pointer; font-weight: 800; border-radius: 8px; width: 100%; font-size: 14px; transition: 0.3s; }
         .btn-radar.on { background: #ef4444; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
 
+        /* ANTREAN CSS BARU */
+        .grid-antrean { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .card-antrean { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px 10px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .card-antrean h4 { margin: 0; color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-antrean .nomor { font-size: 40px; font-weight: 800; margin: 10px 0; }
+        .card-kc { border-top: 4px solid #2563eb; }
+        .card-kc .nomor { color: #2563eb; }
+        .card-gading { border-top: 4px solid #16a34a; }
+        .card-gading .nomor { color: #16a34a; }
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; background: #e2e8f0; color: #64748b; }
+        .status-badge.live { background: #dcfce7; color: #16a34a; animation: pulse 2s infinite; }
+
+        /* MENU BAWAH */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e2e8f0; z-index: 1000; }
         .nav-item { background: none; border: none; color: #64748b; font-size: 20px; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 20%; transition: 0.3s; }
         .nav-item span { font-size: 10px; margin-top: 4px; font-weight: 600; }
@@ -59,7 +72,26 @@
 
         <div id="tab-anggota" class="tab-content"><h3>Data Anggota</h3><p>Modul Anggota...</p></div>
         <div id="tab-keuangan" class="tab-content"><h3>Keuangan</h3><p>Modul Keuangan...</p></div>
-        <div id="tab-antrean" class="tab-content"><h3>Antrean Gading & KC</h3><p>Menunggu Koneksi...</p></div>
+        
+        <div id="tab-antrean" class="tab-content">
+            <h3>Supervisi Antrean Real-Time</h3>
+            <p style="font-size: 12px; color: gray; margin-top: -5px;">Memantau slot charging secara live.</p>
+            
+            <div class="grid-antrean">
+                <div class="card-antrean card-kc">
+                    <h4>KARTIKA CHANDRA</h4>
+                    <div class="nomor" id="nomor-kc">--</div>
+                    <span class="status-badge" id="status-kc">Menghubungkan...</span>
+                </div>
+                
+                <div class="card-antrean card-gading">
+                    <h4>GADING</h4>
+                    <div class="nomor" id="nomor-gading">--</div>
+                    <span class="status-badge" id="status-gading">Menghubungkan...</span>
+                </div>
+            </div>
+        </div>
+
         <div id="tab-broadcast" class="tab-content"><h3>Broadcast</h3><p>Modul Broadcast...</p></div>
     </div>
 
@@ -77,103 +109,129 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+        // ==========================================
         // 1. KONEKSI FIREBASE UTAMA (MLU)
-        const configMLU = { 
-            apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", 
-            authDomain: "rtomaka-e67b5.firebaseapp.com", 
-            projectId: "rtomaka-e67b5", 
-            storageBucket: "rtomaka-e67b5.firebasestorage.app", 
-            messagingSenderId: "472036722228", 
-            appId: "1:472036722228:web:11d520f9204db317d02c61" 
-        };
+        // ==========================================
+        const configMLU = { apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", authDomain: "rtomaka-e67b5.firebaseapp.com", projectId: "rtomaka-e67b5", storageBucket: "rtomaka-e67b5.firebasestorage.app", messagingSenderId: "472036722228", appId: "1:472036722228:web:11d520f9204db317d02c61" };
         const app = initializeApp(configMLU); 
         const db = getFirestore(app);
 
+        // ==========================================
         // 2. KONEKSI FIREBASE GADING
+        // ==========================================
         const configGading = { apiKey: "AIzaSyB666i9lYWIpxOdkwpoX9EvFvHLmHczeq8", authDomain: "fcgadingnew22.firebaseapp.com", projectId: "fcgadingnew22" };
         const appGading = initializeApp(configGading, "AppGading");
         const dbGading = getFirestore(appGading);
+        const refGading = doc(dbGading, "antrian", "utama");
 
+        // ==========================================
         // 3. KONEKSI FIREBASE KARTIKA CHANDRA
+        // ==========================================
         const configKC = { apiKey: "AIzaSyDDVYQSjmJEn_RvIUotSxbh8L-ysJMCthk", authDomain: "kartikachandrafc.firebaseapp.com", projectId: "kartikachandrafc" };
         const appKC = initializeApp(configKC, "AppKC");
         const dbKC = getFirestore(appKC);
+        const refKC = doc(dbKC, "antrian", "utama");
 
-        // INISIALISASI PETA LEAFLET
+        // ==========================================
+        // LOGIKA PETA & RADAR (TETAP SAMA SEPERTI SEBELUMNYA)
+        // ==========================================
         let map = L.map('map', {zoomControl: false}).setView([-6.200000, 106.816666], 11);
         L.control.zoom({ position: 'topright' }).addTo(map);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
-
         let markersGroup = L.layerGroup().addTo(map);
 
-        // ==========================================
-        // LOGIKA RADAR DENGAN "MEMORY / AUTO-SAVE"
-        // ==========================================
         let radarActive = false;
-        let unsubscribe = null; 
-        
+        let unsubscribeRadar = null; 
         const btnToggleRadar = document.getElementById('btnToggleRadar');
         const radarOverlay = document.getElementById('radar-sweep');
 
-        // Fungsi utama menyalakan & mematikan radar
         function jalankanRadar() {
             radarActive = !radarActive;
-
             if (radarActive) {
-                // SIMPAN KE MEMORI: Radar sedang ON
                 localStorage.setItem('mcc_radar_status', 'ON');
-
                 radarOverlay.style.display = 'block';
                 btnToggleRadar.classList.add('on');
                 btnToggleRadar.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> RADAR AKTIF & TRACKING...';
 
                 const locRef = collection(db, "fc_locations");
-                unsubscribe = onSnapshot(locRef, (querySnapshot) => {
+                unsubscribeRadar = onSnapshot(locRef, (querySnapshot) => {
                     markersGroup.clearLayers(); 
-                    
                     querySnapshot.forEach((doc) => {
                         const data = doc.data();
                         const lat = data.latitude || data.lat;
                         const lng = data.longitude || data.lng;
-                        
                         if (lat && lng) {
-                            const customIcon = L.divIcon({
-                                className: 'custom-marker',
-                                html: '<div style="width: 14px; height: 14px; background: #2563eb; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(37,99,235,0.8);"></div>',
-                                iconSize: [20, 20], iconAnchor: [10, 10]
-                            });
-
+                            const customIcon = L.divIcon({ className: 'custom-marker', html: '<div style="width: 14px; height: 14px; background: #2563eb; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(37,99,235,0.8);"></div>', iconSize: [20, 20], iconAnchor: [10, 10] });
                             const nama = data.nama || data.namaLengkap || doc.id;
-                            const marker = L.marker([lat, lng], {icon: customIcon})
-                                .bindPopup(`<b>${nama}</b>`);
-                            
-                            markersGroup.addLayer(marker);
+                            markersGroup.addLayer(L.marker([lat, lng], {icon: customIcon}).bindPopup(`<b>${nama}</b>`));
                         }
                     });
                 });
             } else {
-                // SIMPAN KE MEMORI: Radar sedang OFF
                 localStorage.setItem('mcc_radar_status', 'OFF');
-
                 radarOverlay.style.display = 'none';
                 btnToggleRadar.classList.remove('on');
                 btnToggleRadar.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> AKTIFKAN RADAR';
-                
-                if (unsubscribe) { unsubscribe(); }
+                if (unsubscribeRadar) { unsubscribeRadar(); }
                 markersGroup.clearLayers();
             }
         }
 
-        // 1. Hubungkan tombol dengan fungsi di atas
         btnToggleRadar.addEventListener('click', jalankanRadar);
+        if (localStorage.getItem('mcc_radar_status') === 'ON') { jalankanRadar(); }
 
-        // 2. CEK MEMORI SAAT HALAMAN DIBUKA/DI-REFRESH
-        // Jika sebelumnya disimpan 'ON', maka otomatis jalankan fungsi radar!
-        if (localStorage.getItem('mcc_radar_status') === 'ON') {
-            jalankanRadar();
-        }
+        // ==========================================
+        // LOGIKA MONITORING ANTREAN REAL-TIME (BARU)
+        // ==========================================
 
-        // LOGIKA PERPINDAHAN TAB
+        // 1. Dengarkan Data Kartika Chandra
+        onSnapshot(refKC, (doc) => {
+            const elNomorKC = document.getElementById('nomor-kc');
+            const elStatusKC = document.getElementById('status-kc');
+            
+            if (doc.exists()) {
+                const data = doc.data();
+                // KITA ASUMSIKAN NAMA FIELDNYA ADALAH "nomor" ATAU "antrean_sekarang" (BISA DISESUAIKAN NANTI)
+                const angka = data.nomor || data.nomor_sekarang || data.sekarang || data.aktif || "0"; 
+                
+                elNomorKC.innerText = angka;
+                elStatusKC.innerText = "● LIVE";
+                elStatusKC.classList.add('live');
+            } else {
+                elNomorKC.innerText = "--";
+                elStatusKC.innerText = "Kosong";
+                elStatusKC.classList.remove('live');
+            }
+        }, (error) => {
+            console.log("Error KC:", error);
+            document.getElementById('status-kc').innerText = "Error API";
+        });
+
+        // 2. Dengarkan Data Gading
+        onSnapshot(refGading, (doc) => {
+            const elNomorGading = document.getElementById('nomor-gading');
+            const elStatusGading = document.getElementById('status-gading');
+            
+            if (doc.exists()) {
+                const data = doc.data();
+                const angka = data.nomor || data.nomor_sekarang || data.sekarang || data.aktif || "0";
+                
+                elNomorGading.innerText = angka;
+                elStatusGading.innerText = "● LIVE";
+                elStatusGading.classList.add('live');
+            } else {
+                elNomorGading.innerText = "--";
+                elStatusGading.innerText = "Kosong";
+                elStatusGading.classList.remove('live');
+            }
+        }, (error) => {
+            console.log("Error Gading:", error);
+            document.getElementById('status-gading').innerText = "Error API";
+        });
+
+        // ==========================================
+        // PERPINDAHAN TAB BAWAH
+        // ==========================================
         window.openTab = function(tabId, btnElement) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
