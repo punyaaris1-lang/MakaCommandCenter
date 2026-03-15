@@ -3,89 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MCC - Supervisi Antrean</title>
+    <title>MCC - Supervisi Antrean (GOD MODE)</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --royal-blue: #0A2259; --electric-blue: #2563eb; --success: #10B981; --danger: #ef4444; --warning: #f59e0b; }
+        :root { --royal-blue: #0A2259; --electric-blue: #2563eb; --success: #10B981; --danger: #ef4444; --warning: #f59e0b; --gold: #d4af37; }
         body { background: #f4f7f6; color: #1e293b; font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 100px; }
-        .header { background: #fff; padding: 20px 15px; text-align: center; box-shadow: 0 2px 15px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 990; border-bottom: 3px solid var(--electric-blue); }
-        .header h2 { margin: 0; font-family: 'Space Grotesk'; font-size: 22px; color: var(--electric-blue); text-transform: uppercase; }
+        .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 2px 15px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 990; border-bottom: 3px solid var(--danger); }
+        .header h2 { margin: 0; font-family: 'Space Grotesk'; font-size: 20px; color: var(--danger); text-transform: uppercase; }
         
-        .main-panel { padding: 15px; }
+        .admin-bar { background: #1e293b; color: white; padding: 8px 15px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; font-weight: 800; }
+        .btn-change-admin { background: var(--gold); color: #000; border: none; padding: 4px 10px; border-radius: 4px; font-weight: 800; font-size: 10px; cursor: pointer; }
 
-        /* STATION HEADER */
-        .station-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-        .station-title { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #f1f5f9; padding-bottom: 12px; margin-bottom: 15px; }
-        .station-title h3 { margin: 0; font-size: 16px; color: var(--royal-blue); }
-        .live-badge { background: #dcfce7; color: #16a34a; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% {opacity: 1;} 50% {opacity: 0.5;} 100% {opacity: 1;} }
+        .main-panel { padding: 10px; }
 
+        /* STATION CARD */
+        .station-card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .station-title { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #f1f5f9; padding-bottom: 10px; margin-bottom: 12px; }
+        .station-title h3 { margin: 0; font-size: 15px; color: var(--royal-blue); font-family: 'Space Grotesk'; }
+        
         /* SLOT GRID */
-        .slot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 15px; }
-        .slot-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; position: relative; }
-        .slot-box.filled { border-left: 4px solid var(--electric-blue); background: #fff; }
-        .slot-box.empty { border-left: 4px solid #cbd5e1; opacity: 0.7; }
+        .slot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 15px; }
+        .slot-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; min-height: 90px; }
+        .slot-box.filled { border-top: 3px solid var(--electric-blue); background: #fff; }
+        .slot-box.locked { border-top: 3px solid var(--danger); background: #fef2f2; }
         
-        .slot-num { font-size: 10px; font-weight: 800; color: #94a3b8; margin-bottom: 5px; }
-        .slot-user { font-weight: 800; font-size: 13px; color: #1e293b; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .slot-plat { font-family: 'Courier New', monospace; font-weight: 800; font-size: 12px; color: var(--electric-blue); }
+        .slot-num { font-size: 9px; font-weight: 800; color: #94a3b8; margin-bottom: 4px; }
+        .slot-plat { font-family: 'Space Grotesk'; font-weight: 900; font-size: 14px; color: var(--royal-blue); margin: 2px 0; }
         
-        /* TOMBOL KICK ADMIN */
-        .btn-kick { margin-top: 8px; width: 100%; padding: 6px; border: none; background: #fef2f2; color: var(--danger); border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
-        .btn-kick:active { background: var(--danger); color: white; }
+        /* BUTTONS */
+        .btn-mini { padding: 6px; border: none; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; color: white; width: 100%; margin-top: 4px; }
+        .bg-red { background: var(--danger); } .bg-blue { background: var(--electric-blue); } .bg-gold { background: var(--gold); color: black; } .bg-gray { background: #64748b; } .bg-green { background: var(--success); }
 
         /* WAITING LIST */
-        .wait-list { background: #f1f5f9; border-radius: 12px; padding: 10px; margin-top: 10px; }
-        .wait-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
-        .wait-item:last-child { border-bottom: none; }
-        .wait-name { font-size: 12px; font-weight: 700; }
-        .wait-pos { background: var(--royal-blue); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+        .wait-list { background: #f1f5f9; border-radius: 10px; padding: 8px; }
+        .wait-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .wait-item { display: flex; flex-direction: column; padding: 8px; background: white; border-radius: 8px; margin-bottom: 6px; border: 1px solid #e2e8f0; }
+        .wait-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 12px; font-weight: 700; }
+        .wait-actions { display: flex; gap: 4px; }
+        .wait-actions button { flex: 1; padding: 6px 0; font-size: 11px; }
+
+        /* BADGE & LOGS */
+        .form-group { display: flex; gap: 5px; margin-bottom: 10px; }
+        .form-input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; font-family: 'Inter'; font-size: 12px; font-weight: 600; outline: none; text-transform: uppercase; }
+        
+        .log-container { height: 150px; overflow-y: auto; background: #0f172a; border-radius: 8px; padding: 10px; font-family: monospace; font-size: 10px; color: #a5b4fc; display: flex; flex-direction: column-reverse; }
+        .log-line { border-bottom: 1px solid #1e293b; padding: 4px 0; }
+        .log-actor { color: var(--gold); font-weight: bold; }
 
         /* BOTTOM NAV */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e2e8f0; z-index: 999; }
         .nav-item { background: none; border: none; color: #94a3b8; font-size: 20px; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 20%; }
         .nav-item span { font-size: 10px; margin-top: 4px; font-weight: 600; }
-        .nav-item.active { color: var(--electric-blue); transform: translateY(-3px); }
+        .nav-item.active { color: var(--danger); transform: translateY(-3px); }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h2>MCC ANTREAN</h2>
-        <small style="color:#64748b; font-weight:700;">COMMAND CENTER // SUPERVISI STATION</small>
+        <small style="color:#64748b; font-weight:700;">COMMAND CENTER // MODERASI MUTLAK</small>
+    </div>
+    
+    <div class="admin-bar">
+        <span>OP: <span id="displayAdminName" style="color:var(--gold);">GUEST</span></span>
+        <button class="btn-change-admin" onclick="setAdminName()">GANTI NAMA</button>
     </div>
 
     <div class="main-panel">
         
         <div class="station-card">
             <div class="station-title">
-                <h3>FC GADING SERPONG</h3>
-                <span class="live-badge">● LIVE</span>
+                <h3><i class="fa-solid fa-charging-station" style="color:var(--electric-blue);"></i> GADING SERPONG</h3>
             </div>
-            <div class="slot-grid" id="grid-gading">
-                <p style="text-align: center; color: gray; grid-column: 1/-1;">Menyambungkan ke Gading...</p>
-            </div>
-            <div class="wait-list" id="wait-gading">
-                <div style="font-size: 10px; font-weight: 800; color: #64748b; margin-bottom: 5px;">ANTREAN MENUNGGU:</div>
-                <div id="list-wait-gading" style="font-size: 11px; color: gray;">Tidak ada antrean.</div>
+            <div class="slot-grid" id="grid-gading">Loading...</div>
+            
+            <div class="wait-list">
+                <div class="wait-header">
+                    <span style="font-size: 10px; font-weight: 800; color: #64748b;">ANTREAN MENUNGGU:</span>
+                    <button onclick="clearQueue('GADING')" class="btn-mini bg-red" style="width:auto; margin:0; padding:4px 8px;">KOSONGKAN</button>
+                </div>
+                <div id="wait-gading"></div>
             </div>
         </div>
 
         <div class="station-card">
             <div class="station-title">
-                <h3>FC KARTIKA CHANDRA</h3>
-                <span class="live-badge">● LIVE</span>
+                <h3><i class="fa-solid fa-charging-station" style="color:var(--electric-blue);"></i> KARTIKA CHANDRA</h3>
             </div>
-            <div class="slot-grid" id="grid-kc">
-                <p style="text-align: center; color: gray; grid-column: 1/-1;">Menyambungkan ke KC...</p>
+            <div class="slot-grid" id="grid-kc" style="grid-template-columns: repeat(3, 1fr);">Loading...</div>
+            
+            <div class="wait-list">
+                <div class="wait-header">
+                    <span style="font-size: 10px; font-weight: 800; color: #64748b;">ANTREAN MENUNGGU:</span>
+                    <button onclick="clearQueue('KC')" class="btn-mini bg-red" style="width:auto; margin:0; padding:4px 8px;">KOSONGKAN</button>
+                </div>
+                <div id="wait-kc"></div>
             </div>
-            <div class="wait-list" id="wait-kc">
-                <div style="font-size: 10px; font-weight: 800; color: #64748b; margin-bottom: 5px;">ANTREAN MENUNGGU:</div>
-                <div id="list-wait-kc" style="font-size: 11px; color: gray;">Tidak ada antrean.</div>
+        </div>
+
+        <div class="station-card">
+            <h3 style="margin: 0 0 10px; font-family:'Space Grotesk'; font-size:14px;"><i class="fa-solid fa-id-badge"></i> INPUT BADGE JABATAN</h3>
+            <div class="form-group">
+                <input type="text" id="badgePlat" class="form-input" placeholder="PLAT NOMOR (B 123 ABC)">
             </div>
+            <div class="form-group">
+                <select id="badgeRole" class="form-input" style="text-transform:none;">
+                    <option value="MEMBER">Keluarga MLU (Default)</option>
+                    <option value="KORLAP">Korlap</option>
+                    <option value="SATGAS">Satgas</option>
+                    <option value="HUMAS">Humas</option>
+                    <option value="PENGURUS">Pengurus</option>
+                    <option value="KETUM">Ketua Umum</option>
+                    <option value="VIP">VIP</option>
+                </select>
+                <button onclick="updateBadge()" class="btn-mini bg-blue" style="width:80px; margin:0;">SIMPAN</button>
+            </div>
+        </div>
+
+        <div class="station-card">
+            <h3 style="margin: 0 0 10px; font-family:'Space Grotesk'; font-size:14px;"><i class="fa-solid fa-terminal"></i> ACTIVITY LOGS (50)</h3>
+            <div class="log-container" id="logBox"></div>
         </div>
 
     </div>
@@ -100,94 +140,222 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, updateDoc, runTransaction, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, runTransaction, collection, addDoc, query, orderBy, limit, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // KONEKSI FIREBASE
+        // 1. KONEKSI 3 FIREBASE
+        const appMain = initializeApp({ apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", authDomain: "rtomaka-e67b5.firebaseapp.com", projectId: "rtomaka-e67b5" }, "MainApp");
+        const dbMain = getFirestore(appMain);
+        
         const appGading = initializeApp({ apiKey: "AIzaSyB666i9lYWIpxOdkwpoX9EvFvHLmHczeq8", authDomain: "fcgadingnew22.firebaseapp.com", projectId: "fcgadingnew22" }, "GadingApp");
         const dbGading = getFirestore(appGading);
+        
         const appKC = initializeApp({ apiKey: "AIzaSyDDVYQSjmJEn_RvIUotSxbh8L-ysJMCthk", authDomain: "kartikachandrafc.firebaseapp.com", projectId: "kartikachandrafc" }, "KCApp");
         const dbKC = getFirestore(appKC);
 
-        // 1. MONITOR GADING
-        onSnapshot(doc(dbGading, "antrian", "utama"), (snap) => {
+        // HELPER FUNGSI DATABASE
+        function getDb(station) { return station === 'GADING' ? dbGading : dbKC; }
+        function getRef(station) { return doc(getDb(station), "antrian", "utama"); }
+
+        // IDENTITAS ADMIN
+        window.setAdminName = () => {
+            const name = prompt("Masukkan Nama Anda (Admin):");
+            if(name) {
+                localStorage.setItem('mcc_admin_name', name.toUpperCase());
+                document.getElementById('displayAdminName').innerText = name.toUpperCase();
+            }
+        };
+        if(!localStorage.getItem('mcc_admin_name')) window.setAdminName();
+        else document.getElementById('displayAdminName').innerText = localStorage.getItem('mcc_admin_name');
+
+        function addLog(action, details) {
+            const admin = localStorage.getItem('mcc_admin_name') || 'UNKNOWN';
+            addDoc(collection(dbMain, "mcc_logs"), { actor: admin, action: action, details: details, timestamp: Date.now() });
+        }
+
+        // ==========================================
+        // RENDER GADING
+        // ==========================================
+        onSnapshot(getRef('GADING'), (snap) => {
             if(!snap.exists()) return;
-            const data = snap.data();
-            renderSlots('grid-gading', data.chargingSlots || [null,null,null], dbGading, 'Gading');
-            renderWaiting('list-wait-gading', data.waitingQueue || []);
+            const d = snap.data();
+            renderSlots('grid-gading', 'GADING', d.chargingSlots || [null,null,null]);
+            renderQueue('wait-gading', 'GADING', d.waitingQueue || []);
         });
 
-        // 2. MONITOR KC
-        onSnapshot(doc(dbKC, "antrian", "utama"), (snap) => {
+        // ==========================================
+        // RENDER KC
+        // ==========================================
+        onSnapshot(getRef('KC'), (snap) => {
             if(!snap.exists()) return;
-            const data = snap.data();
-            renderSlots('grid-kc', data.chargingSlots || [null,null,null,null,null], dbKC, 'KC');
-            renderWaiting('list-wait-kc', data.waitingQueue || []);
+            const d = snap.data();
+            renderSlots('grid-kc', 'KC', d.chargingSlots || [null,null,null,null,null]);
+            renderQueue('wait-kc', 'KC', d.waitingQueue || []);
         });
 
-        function renderSlots(targetId, slots, dbRef, stationName) {
-            const container = document.getElementById(targetId);
-            container.innerHTML = '';
+        // RENDER UI SLOT
+        function renderSlots(targetId, station, slots) {
+            const cont = document.getElementById(targetId); cont.innerHTML = '';
             slots.forEach((s, i) => {
-                const div = document.createElement('div');
-                div.className = `slot-box ${s ? 'filled' : 'empty'}`;
-                
-                if(s) {
-                    div.innerHTML = `
-                        <div class="slot-num">SLOT ${i+1}</div>
-                        <p class="slot-user">${s.userName}</p>
-                        <div class="slot-plat">${s.plat}</div>
-                        <button class="btn-kick" onclick="window.adminKick('${stationName}', ${i})">
-                            <i class="fa-solid fa-gavel"></i> KICK ADMIN
-                        </button>`;
+                if(s && s.isLocked) {
+                    cont.innerHTML += `<div class="slot-box locked"><div class="slot-num">SLOT ${i+1}</div><div style="color:var(--danger); font-size:12px; font-weight:800; margin:auto;"><i class="fa-solid fa-lock"></i> LOCKED</div><button onclick="toggleLock('${station}', ${i})" class="btn-mini bg-green">BUKA</button></div>`;
+                } else if (s) {
+                    cont.innerHTML += `<div class="slot-box filled"><div class="slot-num">SLOT ${i+1}</div><div class="slot-plat">${s.plat}</div><div style="font-size:10px;">${s.userName.split(' ')[0]}</div><button onclick="forceStop('${station}', ${i})" class="btn-mini bg-red"><i class="fa-solid fa-gavel"></i> KICK</button></div>`;
                 } else {
-                    div.innerHTML = `<div class="slot-num">SLOT ${i+1}</div><p style="color:#cbd5e1; font-size:12px; font-weight:800;">KOSONG</p>`;
+                    cont.innerHTML += `<div class="slot-box"><div class="slot-num">SLOT ${i+1}</div><div style="color:#cbd5e1; font-size:10px; font-weight:800; margin:auto;">KOSONG</div><div><button onclick="forcePush('${station}', ${i})" class="btn-mini bg-blue">ISI</button><button onclick="toggleLock('${station}', ${i})" class="btn-mini bg-gray" style="margin-top:2px;">KUNCI</button></div></div>`;
                 }
-                container.appendChild(div);
             });
         }
 
-        function renderWaiting(targetId, queue) {
-            const container = document.getElementById(targetId);
-            if(queue.length === 0) { container.innerHTML = 'Tidak ada antrean.'; return; }
-            container.innerHTML = '';
-            queue.forEach((q, idx) => {
-                container.innerHTML += `
+        // RENDER UI ANTREAN
+        function renderQueue(targetId, station, queue) {
+            const cont = document.getElementById(targetId);
+            if(queue.length === 0) { cont.innerHTML = '<div style="text-align:center; font-size:11px; color:gray; padding:10px;">Antrean Kosong</div>'; return; }
+            cont.innerHTML = '';
+            queue.forEach((q, i) => {
+                const isFirst = i === 0 ? 'disabled' : '';
+                const isLast = i === queue.length - 1 ? 'disabled' : '';
+                cont.innerHTML += `
                     <div class="wait-item">
-                        <div class="wait-name">#${idx+1} ${q.plat} (${q.userName})</div>
-                        <div class="wait-pos">${idx+1}</div>
+                        <div class="wait-info">
+                            <span><span style="color:var(--danger);">#${i+1}</span> ${q.plat}</span>
+                            <span style="font-size:10px; color:gray;">${q.userName}</span>
+                        </div>
+                        <div class="wait-actions">
+                            <button class="btn-mini bg-gray" onclick="moveQ('${station}', ${i}, -1)" ${isFirst}>▲</button>
+                            <button class="btn-mini bg-gray" onclick="moveQ('${station}', ${i}, 1)" ${isLast}>▼</button>
+                            <button class="btn-mini bg-gold" onclick="assignSlot('${station}', ${i})">▶ SLOT</button>
+                            <button class="btn-mini bg-red" onclick="delQ('${station}', '${q.plat}')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
                     </div>`;
             });
         }
 
-        // FUNGSI DEWA: KICK ADMIN
-        window.adminKick = async (station, idx) => {
-            if(!confirm(`Keluarkan paksa unit di Slot ${idx+1} (${station})?`)) return;
-            
-            const db = station === 'Gading' ? dbGading : dbKC;
-            const docRef = doc(db, "antrian", "utama");
-
-            try {
-                await runTransaction(db, async (t) => {
-                    const snap = await t.get(docRef);
-                    const d = snap.data();
-                    const user = d.chargingSlots[idx];
-
-                    // Simpan Log Kick (Opsional)
-                    if(user) {
-                        const logCol = collection(db, "charging_logs");
-                        await addDoc(logCol, {
-                            plat: user.plat, userName: user.userName,
-                            status: 'KICKED_BY_MCC_ADMIN', timestamp: Date.now()
-                        });
-                    }
-
-                    // Kosongkan Slot
-                    d.chargingSlots[idx] = null;
-                    t.update(docRef, { chargingSlots: d.chargingSlots });
-                });
-                alert("Berhasil dikeluarkan!");
-            } catch (e) { alert("Gagal: " + e.message); }
+        // ==========================================
+        // FUNGSI DEWA (MODERASI)
+        // ==========================================
+        window.forceStop = (station, idx) => {
+            if(!confirm(`KICK user dari Slot ${idx+1} di ${station}?`)) return;
+            runTransaction(getDb(station), async(t) => {
+                const d = (await t.get(getRef(station))).data();
+                d.chargingSlots[idx] = null;
+                t.update(getRef(station), { chargingSlots: d.chargingSlots });
+            }).then(() => addLog("KICK_SLOT", `Kick Slot ${idx+1} di ${station}`));
         };
+
+        window.forcePush = (station, idx) => {
+            const plat = prompt("Masukkan Plat Nomor:"); if(!plat) return;
+            const nama = prompt("Masukkan Nama:"); if(!nama) return;
+            runTransaction(getDb(station), async(t) => {
+                const d = (await t.get(getRef(station))).data();
+                d.chargingSlots[idx] = { plat: plat.toUpperCase(), userName: nama.toUpperCase(), role: "MEMBER", entryTime: Date.now() };
+                t.update(getRef(station), { chargingSlots: d.chargingSlots });
+            }).then(() => addLog("ISI_PAKSA", `Isi Slot ${idx+1} di ${station} dg ${plat}`));
+        };
+
+        window.toggleLock = (station, idx) => {
+            runTransaction(getDb(station), async(t) => {
+                const d = (await t.get(getRef(station))).data();
+                if(d.chargingSlots[idx] && d.chargingSlots[idx].isLocked) {
+                    d.chargingSlots[idx] = null;
+                    addLog("UNLOCK_SLOT", `Buka Slot ${idx+1} di ${station}`);
+                } else if(!d.chargingSlots[index]) {
+                    d.chargingSlots[idx] = { plat: "LOCKED", userName: "MAINTENANCE", isLocked: true };
+                    addLog("LOCK_SLOT", `Kunci Slot ${idx+1} di ${station}`);
+                }
+                t.update(getRef(station), { chargingSlots: d.chargingSlots });
+            });
+        };
+
+        window.moveQ = (station, idx, dir) => {
+            runTransaction(getDb(station), async(t) => {
+                const d = (await t.get(getRef(station))).data();
+                let q = d.waitingQueue || [];
+                if(idx + dir < 0 || idx + dir >= q.length) return;
+                
+                let temp = q[idx]; q[idx] = q[idx + dir]; q[idx + dir] = temp;
+                q.forEach((x, i) => x.qNo = i + 1);
+                
+                t.update(getRef(station), { waitingQueue: q });
+                addLog("GESER_ANTREAN", `Geser ${temp.plat} di ${station}`);
+            });
+        };
+
+        window.assignSlot = (station, qIdx) => {
+            const slotStr = prompt(`Tarik ke Slot Berapa di ${station}?`); if(!slotStr) return;
+            const target = parseInt(slotStr) - 1;
+            runTransaction(getDb(station), async(t) => {
+                const d = (await t.get(getRef(station))).data();
+                if(d.chargingSlots[target]) return Promise.reject("Slot tidak kosong/terkunci!");
+                
+                let q = d.waitingQueue || [];
+                let user = q.splice(qIdx, 1)[0];
+                d.chargingSlots[target] = user;
+                q.forEach((x, i) => x.qNo = i + 1);
+                
+                t.update(getRef(station), { waitingQueue: q, chargingSlots: d.chargingSlots });
+                addLog("ASSIGN_SLOT", `Tarik ${user.plat} ke Slot ${target+1} (${station})`);
+            }).catch(e => alert(e));
+        };
+
+        window.delQ = (station, plat) => {
+            if(!confirm(`Hapus ${plat} dari antrean ${station}?`)) return;
+            runTransaction(getDb(station), async(t) => {
+                const d = (await t.get(getRef(station))).data();
+                const newQ = d.waitingQueue.filter(x => x.plat !== plat);
+                t.update(getRef(station), { waitingQueue: newQ });
+                addLog("HAPUS_ANTREAN", `Hapus ${plat} di ${station}`);
+            });
+        };
+
+        window.clearQueue = (station) => {
+            if(!confirm(`YAKIN KOSONGKAN SEMUA ANTREAN DI ${station}?`)) return;
+            runTransaction(getDb(station), async(t) => {
+                t.update(getRef(station), { waitingQueue: [], lastTicket: 0 });
+                addLog("CLEAR_QUEUE", `Kosongkan antrean ${station}`);
+            });
+        };
+
+        // ==========================================
+        // INPUT BADGE JABATAN
+        // ==========================================
+        window.updateBadge = async () => {
+            const plat = document.getElementById('badgePlat').value.trim().toUpperCase();
+            const role = document.getElementById('badgeRole').value;
+            if(!plat) return alert("Isi Plat Nomor!");
+            
+            try {
+                // Update ke Database Utama (MLU)
+                const q = query(collection(dbMain, "mlu_members"), where("plat", "==", plat));
+                const snap = await getDocs(q);
+                
+                if(snap.empty) {
+                    // Kalau belum ada di db utama, buatkan baru
+                    await addDoc(collection(dbMain, "mlu_members"), { plat: plat, role: role, namaKtp: "Member Baru" });
+                } else {
+                    // Update yang sudah ada
+                    const docId = snap.docs[0].id;
+                    const { updateDoc: updateMainDoc, doc: docMain } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
+                    await updateMainDoc(docMain(dbMain, "mlu_members", docId), { role: role });
+                }
+                
+                addLog("UPDATE_BADGE", `Set ${plat} menjadi ${role}`);
+                alert("Berhasil Update Jabatan!");
+                document.getElementById('badgePlat').value = '';
+            } catch (e) { alert("Gagal update badge: " + e.message); }
+        };
+
+        // ==========================================
+        // RENDER LOGS (50 BARIS TERAKHIR)
+        // ==========================================
+        onSnapshot(query(collection(dbMain, "mcc_logs"), orderBy("timestamp", "desc"), limit(50)), (snap) => {
+            let h = '';
+            snap.forEach(d => {
+                const x = d.data();
+                h += `<div class="log-line">[<span class="log-actor">${x.actor}</span>] ${x.action}: <span style="color:#e2e8f0;">${x.details}</span></div>`;
+            });
+            document.getElementById('logBox').innerHTML = h;
+        });
+
     </script>
 </body>
 </html>
