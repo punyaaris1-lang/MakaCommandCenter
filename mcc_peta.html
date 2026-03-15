@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --royal-blue: #0A2259; --electric-blue: #2563eb; --danger: #ef4444; --success: #10B981; }
+        :root { --royal-blue: #0A2259; --electric-blue: #2563eb; --danger: #ef4444; --success: #10B981; --warning: #f59e0b; }
         body { background: #f4f7f6; color: #1e293b; font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 90px; height: 100vh; overflow: hidden; }
         
         /* HEADER OVERLAY */
@@ -31,11 +31,16 @@
         .btn-radar.on { background: var(--danger); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
-        /* CUSTOM MARKER WITH PHOTO */
+        /* CUSTOM MARKERS */
         .custom-div-icon { background: transparent; border: none; }
+        
+        /* Marker Member (Foto) */
         .marker-pin { width: 40px; height: 40px; border-radius: 50%; background: var(--electric-blue); border: 2px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .marker-pin img { width: 100%; height: 100%; object-fit: cover; }
         .marker-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); background: white; padding: 2px 8px; border-radius: 6px; font-size: 9px; font-weight: 800; white-space: nowrap; box-shadow: 0 3px 6px rgba(0,0,0,0.3); color: #1e293b; border: 1px solid #e2e8f0; }
+
+        /* Marker Stasiun FC */
+        .marker-fc { width: 35px; height: 35px; border-radius: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); border: 2px solid white; box-shadow: 0 5px 15px rgba(245, 158, 11, 0.5); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; }
 
         /* S.O.S ALARM BOX */
         #sosAlertBox { display:none; position:absolute; top:80px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; background:linear-gradient(135deg, #ef4444, #991b1b); color:white; padding:20px; border-radius:20px; z-index:9999; box-shadow:0 10px 30px rgba(239,68,68,0.5); border:2px solid white; animation: slideDown 0.5s; }
@@ -45,7 +50,7 @@
         .btn-rescue-wa { background:#10B981; color:white !important; padding:6px 12px; border-radius:8px; text-decoration:none; font-weight:800; font-size:10px; box-shadow:0 3px 10px rgba(0,0,0,0.2); transition:0.2s;}
         .btn-rescue-wa:active { transform:scale(0.95); }
 
-        /* POPUP INTELLIGENCE CARD */
+        /* POPUP INTELLIGENCE CARD (MEMBER) */
         .leaflet-popup-content-wrapper { border-radius: 16px; padding: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .leaflet-popup-content { margin: 0; }
         .intel-card { padding: 15px; text-align: center; min-width: 140px; background: white; }
@@ -120,21 +125,52 @@
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
         L.control.zoom({ position: 'topright' }).addTo(map);
 
-        let markersGroup = L.layerGroup().addTo(map);
+        let fcMarkersGroup = L.layerGroup().addTo(map); // Layer khusus Stasiun FC (Permanen)
+        let markersGroup = L.layerGroup().addTo(map);   // Layer khusus Pasukan/Anggota
+        
         let radarActive = false;
         let unsubscribe = null;
-        let currentMembers = []; // Cache data member terbaru untuk hitung jarak SOS
+        let currentMembers = []; 
         let sosMarker = null;
 
-        // RUMUS HAVERSINE (Menghitung Jarak Lengkung Bumi)
+        // RUMUS HAVERSINE
         function calcDist(lat1, lon1, lat2, lon2) {
             const p = 0.017453292519943295, c = Math.cos;
             const a = 0.5 - c((lat2 - lat1) * p)/2 + c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p))/2;
-            return 12742 * Math.asin(Math.sqrt(a)); // Hasil dalam KM
+            return 12742 * Math.asin(Math.sqrt(a)); 
         }
 
         // ==========================================
-        // FUNGSI RADAR UTAMA (LACAK PASUKAN)
+        // 1. LOAD STASIUN FC (PERMANEN MUNCUL)
+        // ==========================================
+        onSnapshot(collection(db, "fc_locations"), (snap) => {
+            fcMarkersGroup.clearLayers();
+            snap.forEach(doc => {
+                const d = doc.data();
+                const lat = d.latitude || d.lat;
+                const lng = d.longitude || d.lng;
+                
+                if (lat && lng) {
+                    const fcIcon = L.divIcon({
+                        className: 'custom-div-icon',
+                        html: `<div class="marker-fc"><i class="fa-solid fa-charging-station"></i></div>`,
+                        iconSize: [35, 35], iconAnchor: [17, 17]
+                    });
+                    
+                    const marker = L.marker([lat, lng], {icon: fcIcon}).addTo(fcMarkersGroup);
+                    marker.bindPopup(`
+                        <div style="text-align:center; padding:10px;">
+                            <h4 style="margin:0 0 5px; color:#b45309; font-family:'Outfit';">${d.nama || doc.id}</h4>
+                            <div style="font-size:10px; color:gray; font-weight:bold;">STASIUN FAST CHARGING</div>
+                        </div>
+                    `);
+                }
+            });
+        });
+
+
+        // ==========================================
+        // 2. FUNGSI RADAR UTAMA (LACAK PASUKAN)
         // ==========================================
         window.toggleRadar = () => {
             const btn = document.getElementById('btnToggleRadar');
@@ -158,9 +194,8 @@
 
                     snap.forEach(doc => {
                         const d = doc.data();
-                        currentMembers.push({id: doc.id, ...d}); // Simpan untuk kalkulasi jarak SOS nanti
+                        currentMembers.push({id: doc.id, ...d}); 
 
-                        // Munculkan di peta jika isSharing (Radar Anggota) ON
                         if (d.isSharing === true && d.lat && d.lng) {
                             memberCount++;
                             const nama = d.namaKtp || d.namaWa || d.nama || "Tanpa Nama";
@@ -206,14 +241,14 @@
                 
                 if (unsubscribe) unsubscribe();
                 markersGroup.clearLayers();
-                currentMembers = [];
+                // Catatan: Jangan kosongkan currentMembers agar sistem SOS tetap bisa bekerja dengan data terakhir
             }
         };
 
         if (localStorage.getItem('mcc_radar_on') === 'true') { window.toggleRadar(); }
 
         // ==========================================
-        // SISTEM DETEKSI DARURAT (S.O.S) 
+        // 3. SISTEM DETEKSI DARURAT (S.O.S) 
         // ==========================================
         window.activeSosId = null;
 
@@ -229,17 +264,14 @@
             const sosData = snap.docs[0].data();
             window.activeSosId = snap.docs[0].id;
             
-            // Tampilkan Data Korban
             document.getElementById('sosVictimInfo').innerHTML = `
                 <b>${sosData.nama}</b> (${sosData.plat})<br>
                 <span style="color:#fca5a5;">Kasus:</span> ${sosData.jenis}<br>
                 <span style="color:#fca5a5;">Ket:</span> ${sosData.keterangan || "Tidak ada."}
             `;
 
-            // KALKULASI 3 ORANG TERDEKAT DARI LOKASI KORBAN
             let rescuers = [];
             currentMembers.forEach(m => {
-                // Syarat: radar member aktif & dia bukan korbannya
                 if(m.isSharing && m.lat && m.lng && m.id !== sosData.memberId) {
                     let dist = calcDist(sosData.lat, sosData.lng, m.lat, m.lng);
                     rescuers.push({ ...m, distance: dist });
@@ -268,12 +300,10 @@
             document.getElementById('sosRescuers').innerHTML = rescuerHtml;
             alertBox.style.display = 'block';
 
-            // OTOMATIS FOKUS KAMERA PETA KE KORBAN
             if (map) {
                 map.setView([sosData.lat, sosData.lng], 15);
                 if(sosMarker) map.removeLayer(sosMarker);
                 
-                // Beri marker khusus merah untuk korban SOS
                 const sosIcon = L.divIcon({
                     className: 'custom-div-icon',
                     html: `<div style="width:40px; height:40px; background:#ef4444; border-radius:50%; border:3px solid white; display:flex; align-items:center; justify-content:center; color:white; font-size:20px; box-shadow:0 0 20px rgba(239,68,68,0.8); animation:pulse 1s infinite;"><i class="fa-solid fa-triangle-exclamation"></i></div>`,
@@ -285,7 +315,6 @@
             }
         });
 
-        // FUNGSI MEMATIKAN S.O.S
         window.selesaikanSos = async () => {
             if(window.activeSosId && confirm("Apakah S.O.S ini sudah tertangani? Alarm akan dimatikan.")) {
                 await updateDoc(doc(db, "mlu_sos", window.activeSosId), { status: 'RESOLVED' });
