@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MCC - Live Tracking Satelit</title>
+    <title>MCC - Live Tracking Pasukan</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --royal-blue: #0A2259; --electric-blue: #2563eb; --danger: #ef4444; }
+        :root { --royal-blue: #0A2259; --electric-blue: #2563eb; --danger: #ef4444; --success: #10B981; }
         body { background: #f4f7f6; color: #1e293b; font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 90px; height: 100vh; overflow: hidden; }
         
         /* HEADER OVERLAY */
         .header { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 15px; text-align: center; box-shadow: 0 2px 15px rgba(0,0,0,0.05); position: absolute; top: 0; left: 0; right: 0; z-index: 1000; border-bottom: 3px solid var(--electric-blue); }
-        .header h2 { margin: 0; font-family: 'Space Grotesk'; font-size: 18px; color: var(--electric-blue); text-transform: uppercase; }
+        .header h2 { margin: 0; font-family: 'Outfit'; font-size: 20px; color: var(--electric-blue); text-transform: uppercase; }
 
         /* FULL SCREEN MAP */
         #map { width: 100%; height: 100vh; z-index: 1; background: #e5e7eb; }
@@ -27,25 +27,39 @@
 
         /* FLOATING CONTROLS */
         .map-controls { position: absolute; bottom: 110px; left: 20px; right: 20px; z-index: 1000; text-align: center; }
-        .btn-radar { background: var(--electric-blue); color: white; border: none; padding: 15px 25px; cursor: pointer; font-weight: 800; border-radius: 50px; width: 100%; max-width: 300px; font-size: 13px; box-shadow: 0 10px 25px rgba(37,99,235,0.4); transition: 0.3s; }
+        .btn-radar { background: var(--electric-blue); color: white; border: none; padding: 15px 25px; cursor: pointer; font-weight: 800; border-radius: 50px; width: 100%; max-width: 320px; font-family: 'Space Grotesk'; font-size: 13px; box-shadow: 0 10px 25px rgba(37,99,235,0.4); transition: 0.3s; letter-spacing: 1px; }
         .btn-radar.on { background: var(--danger); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
-        /* BOTTOM NAV */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e2e8f0; z-index: 1001; }
-        .nav-item { background: none; border: none; color: #94a3b8; font-size: 20px; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 20%; transition: 0.3s; }
-        .nav-item span { font-size: 10px; margin-top: 4px; font-weight: 600; }
-        .nav-item.active { color: var(--electric-blue); transform: translateY(-3px); }
+        /* CUSTOM MARKER WITH PHOTO */
+        .custom-div-icon { background: transparent; border: none; }
+        .marker-pin { width: 40px; height: 40px; border-radius: 50%; background: var(--electric-blue); border: 2px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .marker-pin img { width: 100%; height: 100%; object-fit: cover; }
+        .marker-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); background: white; padding: 2px 8px; border-radius: 6px; font-size: 9px; font-weight: 800; white-space: nowrap; box-shadow: 0 3px 6px rgba(0,0,0,0.3); color: #1e293b; border: 1px solid #e2e8f0; }
 
-        /* CUSTOM MARKER STYLE */
-        .custom-marker { background: var(--electric-blue); border: 2px solid white; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+        /* POPUP INTELLIGENCE CARD */
+        .leaflet-popup-content-wrapper { border-radius: 16px; padding: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .leaflet-popup-content { margin: 0; }
+        .intel-card { padding: 15px; text-align: center; min-width: 140px; background: white; }
+        .intel-photo { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid var(--electric-blue); box-shadow: 0 5px 10px rgba(37,99,235,0.2); margin-bottom: 8px; }
+        .intel-name { margin: 0; font-family: 'Outfit'; font-size: 16px; font-weight: 800; color: var(--royal-blue); }
+        .intel-plat { font-family: 'Courier New', Courier, monospace; font-size: 13px; font-weight: 900; color: var(--text-main); margin: 2px 0 5px; }
+        .intel-role { font-size: 9px; font-weight: 800; background: #f1f5f9; color: #64748b; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; display: inline-block; margin-bottom: 10px; }
+        .intel-btn-wa { display: block; background: var(--success); color: white !important; text-decoration: none; font-weight: 800; font-size: 11px; padding: 8px; border-radius: 8px; transition: 0.2s; box-shadow: 0 5px 15px rgba(16,185,129,0.3); }
+        .intel-btn-wa:active { transform: scale(0.95); }
+
+        /* BOTTOM NAV */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e2e8f0; z-index: 1001; }
+        .nav-item { background: none; border: none; color: #94a3b8; font-size: 22px; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 20%; transition: 0.3s; }
+        .nav-item span { font-size: 10px; margin-top: 5px; font-weight: 700; }
+        .nav-item.active { color: var(--electric-blue); transform: translateY(-3px); }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2>MCC TRACKER</h2>
-        <small id="status-text" style="color:#64748b; font-weight:700;">SATELLITE STANDBY</small>
+        <h2><i class="fa-solid fa-satellite"></i> SATELLITE TRACKER</h2>
+        <small id="status-text" style="color:#64748b; font-weight:700; letter-spacing:1px;">SISTEM STANDBY</small>
     </div>
 
     <div id="map"></div>
@@ -56,7 +70,7 @@
 
     <div class="map-controls">
         <button id="btnToggleRadar" class="btn-radar" onclick="toggleRadar()">
-            <i class="fa-solid fa-satellite-dish"></i> AKTIFKAN RADAR TRACKING
+            <i class="fa-solid fa-crosshairs"></i> SCAN LOKASI PASUKAN
         </button>
     </div>
 
@@ -73,7 +87,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // CONFIG FIREBASE
+        // CONFIG FIREBASE MLU
         const firebaseConfig = { 
             apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", 
             authDomain: "rtomaka-e67b5.firebaseapp.com", 
@@ -82,9 +96,14 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // INIT MAP (Jakarta Default)
+        // INIT MAP (Fokus Default Jakarta)
         const map = L.map('map', { zoomControl: false }).setView([-6.200000, 106.816666], 12);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+        
+        // Menggunakan basemap yang lebih bersih agar foto lebih menonjol
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { 
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
         L.control.zoom({ position: 'topright' }).addTo(map);
 
         let markersGroup = L.layerGroup().addTo(map);
@@ -102,32 +121,80 @@
                 localStorage.setItem('mcc_radar_on', 'true');
                 radarUI.style.display = 'block';
                 btn.classList.add('on');
-                btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> MENYAPU AREA (SCANNING...)';
-                statusTxt.innerText = "RADAR ACTIVE // TRACKING ON";
+                btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> MELACAK PERGERAKAN...';
+                statusTxt.innerText = "RADAR AKTIF // MENARIK DATA";
                 statusTxt.style.color = "var(--danger)";
 
-                // Start Firebase Listener
-                unsubscribe = onSnapshot(collection(db, "fc_locations"), (snap) => {
-                    markersGroup.clearLayers();
+                // START SEDOT DATA ANGGOTA (Bukan FC lagi)
+                unsubscribe = onSnapshot(collection(db, "mlu_members"), (snap) => {
+                    markersGroup.clearLayers(); // Bersihkan peta sebelum update posisi baru
+                    let memberCount = 0;
+
                     snap.forEach(doc => {
                         const d = doc.data();
-                        const lat = d.latitude || d.lat;
-                        const lng = d.longitude || d.lng;
-                        if (lat && lng) {
-                            const marker = L.circleMarker([lat, lng], {
-                                radius: 8, color: '#fff', weight: 2, opacity: 1,
-                                fillCompositeOperation: 'screen', fillColor: '#2563eb', fillOpacity: 0.8
-                            }).addTo(markersGroup);
-                            marker.bindPopup(`<b>${d.nama || doc.id}</b><br><small>${d.plat || ''}</small>`);
+                        
+                        // SYARAT MUNCUL: Member harus menyalakan saklar RADAR di aplikasinya
+                        if (d.isSharing === true && d.lat && d.lng) {
+                            memberCount++;
+                            
+                            // 1. Siapkan Foto & Data
+                            const nama = d.namaKtp || d.namaWa || d.nama || "Tanpa Nama";
+                            const plat = d.plat || "No Plat";
+                            const role = d.role || "MEMBER";
+                            const noHp = d.hp ? d.hp.replace(/^0+/, '') : ''; // Hilangkan angka 0 di depan
+                            
+                            // Kalau ada foto pakai fotonya, kalau kosong pakai Avatar Inisial
+                            const fotoSrc = (d.foto && d.foto.length > 50) ? d.foto : `https://ui-avatars.com/api/?background=2563eb&color=fff&name=${encodeURIComponent(nama)}`;
+
+                            // 2. Buat Marker Custom (Foto Melayang)
+                            const iconHtml = `
+                                <div class="marker-pin">
+                                    <img src="${fotoSrc}" alt="Foto">
+                                    <div class="marker-label">${nama.split(' ')[0]}</div>
+                                </div>
+                            `;
+                            const customIcon = L.divIcon({ 
+                                className: 'custom-div-icon', 
+                                html: iconHtml, 
+                                iconSize: [40, 50], 
+                                iconAnchor: [20, 50] 
+                            });
+
+                            const marker = L.marker([d.lat, d.lng], { icon: customIcon }).addTo(markersGroup);
+
+                            // 3. Buat Kartu Detail Intelijen saat diklik
+                            let waButton = noHp ? `<a href="https://wa.me/62${noHp}" target="_blank" class="intel-btn-wa"><i class="fab fa-whatsapp"></i> HUBUNGI MEMBER</a>` : '';
+                            
+                            const popupContent = `
+                                <div class="intel-card">
+                                    <img src="${fotoSrc}" class="intel-photo">
+                                    <h4 class="intel-name">${nama}</h4>
+                                    <div class="intel-plat">${plat}</div>
+                                    <div class="intel-role">${role}</div>
+                                    ${waButton}
+                                </div>
+                            `;
+                            marker.bindPopup(popupContent);
                         }
                     });
+
+                    // Update Status Header
+                    if(memberCount > 0) {
+                        statusTxt.innerText = `MELACAK ${memberCount} PASUKAN AKTIF`;
+                        statusTxt.style.color = "var(--success)";
+                    } else {
+                        statusTxt.innerText = `TIDAK ADA PASUKAN DI RADAR`;
+                        statusTxt.style.color = "#94a3b8";
+                    }
                 });
+
             } else {
+                // MATIKAN RADAR
                 localStorage.setItem('mcc_radar_on', 'false');
                 radarUI.style.display = 'none';
                 btn.classList.remove('on');
-                btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> AKTIFKAN RADAR TRACKING';
-                statusTxt.innerText = "SATELLITE STANDBY";
+                btn.innerHTML = '<i class="fa-solid fa-crosshairs"></i> SCAN LOKASI PASUKAN';
+                statusTxt.innerText = "SISTEM STANDBY";
                 statusTxt.style.color = "#64748b";
                 
                 if (unsubscribe) unsubscribe();
@@ -135,7 +202,7 @@
             }
         };
 
-        // AUTO-START DARI MEMORI
+        // AUTO-START JIKA SEBELUMNYA NYALA
         if (localStorage.getItem('mcc_radar_on') === 'true') {
             window.toggleRadar();
         }
