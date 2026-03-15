@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MCC - Supervisi Antrean</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --royal-blue: #0A2259; --electric-blue: #2563eb; --success: #10B981; --danger: #ef4444; --warning: #f59e0b; }
+        body { background: #f4f7f6; color: #1e293b; font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 100px; }
+        .header { background: #fff; padding: 20px 15px; text-align: center; box-shadow: 0 2px 15px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 990; border-bottom: 3px solid var(--electric-blue); }
+        .header h2 { margin: 0; font-family: 'Space Grotesk'; font-size: 22px; color: var(--electric-blue); text-transform: uppercase; }
+        
+        .main-panel { padding: 15px; }
+
+        /* STATION HEADER */
+        .station-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .station-title { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #f1f5f9; padding-bottom: 12px; margin-bottom: 15px; }
+        .station-title h3 { margin: 0; font-size: 16px; color: var(--royal-blue); }
+        .live-badge { background: #dcfce7; color: #16a34a; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% {opacity: 1;} 50% {opacity: 0.5;} 100% {opacity: 1;} }
+
+        /* SLOT GRID */
+        .slot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        .slot-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; position: relative; }
+        .slot-box.filled { border-left: 4px solid var(--electric-blue); background: #fff; }
+        .slot-box.empty { border-left: 4px solid #cbd5e1; opacity: 0.7; }
+        
+        .slot-num { font-size: 10px; font-weight: 800; color: #94a3b8; margin-bottom: 5px; }
+        .slot-user { font-weight: 800; font-size: 13px; color: #1e293b; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .slot-plat { font-family: 'Courier New', monospace; font-weight: 800; font-size: 12px; color: var(--electric-blue); }
+        
+        /* TOMBOL KICK ADMIN */
+        .btn-kick { margin-top: 8px; width: 100%; padding: 6px; border: none; background: #fef2f2; color: var(--danger); border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-kick:active { background: var(--danger); color: white; }
+
+        /* WAITING LIST */
+        .wait-list { background: #f1f5f9; border-radius: 12px; padding: 10px; margin-top: 10px; }
+        .wait-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
+        .wait-item:last-child { border-bottom: none; }
+        .wait-name { font-size: 12px; font-weight: 700; }
+        .wait-pos { background: var(--royal-blue); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+
+        /* BOTTOM NAV */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e2e8f0; z-index: 999; }
+        .nav-item { background: none; border: none; color: #94a3b8; font-size: 20px; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 20%; }
+        .nav-item span { font-size: 10px; margin-top: 4px; font-weight: 600; }
+        .nav-item.active { color: var(--electric-blue); transform: translateY(-3px); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>MCC ANTREAN</h2>
+        <small style="color:#64748b; font-weight:700;">COMMAND CENTER // SUPERVISI STATION</small>
+    </div>
+
+    <div class="main-panel">
+        
+        <div class="station-card">
+            <div class="station-title">
+                <h3>FC GADING SERPONG</h3>
+                <span class="live-badge">● LIVE</span>
+            </div>
+            <div class="slot-grid" id="grid-gading">
+                <p style="text-align: center; color: gray; grid-column: 1/-1;">Menyambungkan ke Gading...</p>
+            </div>
+            <div class="wait-list" id="wait-gading">
+                <div style="font-size: 10px; font-weight: 800; color: #64748b; margin-bottom: 5px;">ANTREAN MENUNGGU:</div>
+                <div id="list-wait-gading" style="font-size: 11px; color: gray;">Tidak ada antrean.</div>
+            </div>
+        </div>
+
+        <div class="station-card">
+            <div class="station-title">
+                <h3>FC KARTIKA CHANDRA</h3>
+                <span class="live-badge">● LIVE</span>
+            </div>
+            <div class="slot-grid" id="grid-kc">
+                <p style="text-align: center; color: gray; grid-column: 1/-1;">Menyambungkan ke KC...</p>
+            </div>
+            <div class="wait-list" id="wait-kc">
+                <div style="font-size: 10px; font-weight: 800; color: #64748b; margin-bottom: 5px;">ANTREAN MENUNGGU:</div>
+                <div id="list-wait-kc" style="font-size: 11px; color: gray;">Tidak ada antrean.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="window.location.href='mcc_peta.html'"><i class="fa-solid fa-map-location-dot"></i><span>Peta</span></button>
+        <button class="nav-item" onclick="window.location.href='mcc_anggota.html'"><i class="fa-solid fa-users"></i><span>Anggota</span></button>
+        <button class="nav-item" onclick="window.location.href='mcc_keuangan.html'"><i class="fa-solid fa-wallet"></i><span>Keuangan</span></button>
+        <button class="nav-item active"><i class="fa-solid fa-clipboard-list"></i><span>Antrean</span></button>
+        <button class="nav-item" onclick="window.location.href='mcc_pesan.html'"><i class="fa-solid fa-bullhorn"></i><span>Pesan</span></button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, onSnapshot, updateDoc, runTransaction, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // KONEKSI FIREBASE
+        const appGading = initializeApp({ apiKey: "AIzaSyB666i9lYWIpxOdkwpoX9EvFvHLmHczeq8", authDomain: "fcgadingnew22.firebaseapp.com", projectId: "fcgadingnew22" }, "GadingApp");
+        const dbGading = getFirestore(appGading);
+        const appKC = initializeApp({ apiKey: "AIzaSyDDVYQSjmJEn_RvIUotSxbh8L-ysJMCthk", authDomain: "kartikachandrafc.firebaseapp.com", projectId: "kartikachandrafc" }, "KCApp");
+        const dbKC = getFirestore(appKC);
+
+        // 1. MONITOR GADING
+        onSnapshot(doc(dbGading, "antrian", "utama"), (snap) => {
+            if(!snap.exists()) return;
+            const data = snap.data();
+            renderSlots('grid-gading', data.chargingSlots || [null,null,null], dbGading, 'Gading');
+            renderWaiting('list-wait-gading', data.waitingQueue || []);
+        });
+
+        // 2. MONITOR KC
+        onSnapshot(doc(dbKC, "antrian", "utama"), (snap) => {
+            if(!snap.exists()) return;
+            const data = snap.data();
+            renderSlots('grid-kc', data.chargingSlots || [null,null,null,null,null], dbKC, 'KC');
+            renderWaiting('list-wait-kc', data.waitingQueue || []);
+        });
+
+        function renderSlots(targetId, slots, dbRef, stationName) {
+            const container = document.getElementById(targetId);
+            container.innerHTML = '';
+            slots.forEach((s, i) => {
+                const div = document.createElement('div');
+                div.className = `slot-box ${s ? 'filled' : 'empty'}`;
+                
+                if(s) {
+                    div.innerHTML = `
+                        <div class="slot-num">SLOT ${i+1}</div>
+                        <p class="slot-user">${s.userName}</p>
+                        <div class="slot-plat">${s.plat}</div>
+                        <button class="btn-kick" onclick="window.adminKick('${stationName}', ${i})">
+                            <i class="fa-solid fa-gavel"></i> KICK ADMIN
+                        </button>`;
+                } else {
+                    div.innerHTML = `<div class="slot-num">SLOT ${i+1}</div><p style="color:#cbd5e1; font-size:12px; font-weight:800;">KOSONG</p>`;
+                }
+                container.appendChild(div);
+            });
+        }
+
+        function renderWaiting(targetId, queue) {
+            const container = document.getElementById(targetId);
+            if(queue.length === 0) { container.innerHTML = 'Tidak ada antrean.'; return; }
+            container.innerHTML = '';
+            queue.forEach((q, idx) => {
+                container.innerHTML += `
+                    <div class="wait-item">
+                        <div class="wait-name">#${idx+1} ${q.plat} (${q.userName})</div>
+                        <div class="wait-pos">${idx+1}</div>
+                    </div>`;
+            });
+        }
+
+        // FUNGSI DEWA: KICK ADMIN
+        window.adminKick = async (station, idx) => {
+            if(!confirm(`Keluarkan paksa unit di Slot ${idx+1} (${station})?`)) return;
+            
+            const db = station === 'Gading' ? dbGading : dbKC;
+            const docRef = doc(db, "antrian", "utama");
+
+            try {
+                await runTransaction(db, async (t) => {
+                    const snap = await t.get(docRef);
+                    const d = snap.data();
+                    const user = d.chargingSlots[idx];
+
+                    // Simpan Log Kick (Opsional)
+                    if(user) {
+                        const logCol = collection(db, "charging_logs");
+                        await addDoc(logCol, {
+                            plat: user.plat, userName: user.userName,
+                            status: 'KICKED_BY_MCC_ADMIN', timestamp: Date.now()
+                        });
+                    }
+
+                    // Kosongkan Slot
+                    d.chargingSlots[idx] = null;
+                    t.update(docRef, { chargingSlots: d.chargingSlots });
+                });
+                alert("Berhasil dikeluarkan!");
+            } catch (e) { alert("Gagal: " + e.message); }
+        };
+    </script>
+</body>
+</html>
