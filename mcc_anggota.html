@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MCC - Kelola Anggota</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { background: #f4f7f6; color: #1e293b; font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 90px; }
+        .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 990; }
+        .header h2 { margin: 0; font-size: 20px; font-weight: 800; color: #2563eb; }
+        .header small { color: #64748b; font-size: 12px; font-weight: 600; }
+        .main-panel { padding: 15px; }
+        
+        /* PENCARIAN & DAFTAR */
+        .search-box { width: 100%; padding: 14px 15px; border-radius: 12px; border: 2px solid #e2e8f0; margin-bottom: 15px; font-family: 'Inter', sans-serif; font-size: 14px; box-sizing: border-box; transition: 0.3s; }
+        .search-box:focus { border-color: #2563eb; outline: none; box-shadow: 0 0 10px rgba(37,99,235,0.1); }
+        
+        .grid-anggota { display: flex; flex-direction: column; gap: 12px; }
+        .card-member { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .member-avatar { width: 45px; height: 45px; background: #2563eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white; font-size: 18px; flex-shrink: 0; }
+        .member-info { flex: 1; overflow: hidden; }
+        .member-name { margin: 0 0 4px 0; font-size: 15px; font-weight: 800; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .member-plat { font-size: 13px; font-family: 'Courier New', monospace; font-weight: 800; color: #64748b; margin: 0 0 6px 0; }
+        .badge { font-size: 9px; font-weight: 800; padding: 4px 8px; border-radius: 6px; background: #f1f5f9; color: #64748b; text-transform: uppercase; }
+        .badge-admin { background: #fef08a; color: #854d0e; }
+        
+        /* TOMBOL AKSI DEWA */
+        .action-group { display: flex; flex-direction: column; gap: 6px; }
+        .btn-icon { width: 35px; height: 35px; border-radius: 8px; border: none; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-edit { background: #eff6ff; color: #2563eb; }
+        .btn-edit:active { transform: scale(0.9); background: #2563eb; color: white; }
+        .btn-del { background: #fef2f2; color: #ef4444; }
+        .btn-del:active { transform: scale(0.9); background: #ef4444; color: white; }
+
+        /* FLOATING ADD BUTTON */
+        .fab-add { position: fixed; bottom: 85px; right: 20px; width: 60px; height: 60px; background: #2563eb; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 25px rgba(37,99,235,0.4); border: none; cursor: pointer; z-index: 990; transition: 0.2s;}
+        .fab-add:active { transform: scale(0.9); }
+
+        /* MODAL / POPUP FORM */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.7); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; }
+        .modal-box { background: white; width: 90%; max-width: 400px; border-radius: 20px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); max-height: 85vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 18px; font-weight: 800; color: #1e293b; margin: 0; }
+        .btn-close { background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; color: #64748b; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px; display: block; }
+        .form-input { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc; font-family: 'Inter'; font-weight: 600; font-size: 14px; box-sizing: border-box; outline: none; }
+        .form-input:focus { border-color: #2563eb; background: white; }
+        .btn-save { width: 100%; padding: 16px; border: none; border-radius: 12px; background: #2563eb; color: white; font-weight: 800; margin-top: 10px; cursor: pointer; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(37,99,235,0.2); }
+
+        /* MENU BAWAH (NAVIGASI KE FILE LAIN) */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e2e8f0; z-index: 999; }
+        .nav-item { background: none; border: none; color: #64748b; font-size: 20px; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 20%; transition: 0.3s; }
+        .nav-item span { font-size: 10px; margin-top: 4px; font-weight: 600; }
+        .nav-item.active { color: #2563eb; transform: translateY(-3px); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>MCC SYSTEM</h2>
+        <small>Pusat Kendali Anggota</small>
+    </div>
+
+    <div class="main-panel">
+        <input type="text" id="searchInput" class="search-box" placeholder="🔍 Cari nama atau pelat nomor..." onkeyup="filterList()">
+        
+        <div id="memberList" class="grid-anggota">
+            <p style="text-align: center; color: #94a3b8; font-size: 13px; margin-top: 30px;"><i class="fa-solid fa-spinner fa-spin"></i> Menarik database...</p>
+        </div>
+    </div>
+
+    <button class="fab-add" onclick="openModal()"><i class="fa-solid fa-plus"></i></button>
+
+    <div class="modal-overlay" id="formModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitleText">Tambah Anggota</h3>
+                <button class="btn-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <input type="hidden" id="formId">
+            
+            <div class="form-group">
+                <label>Nama Sesuai KTP</label>
+                <input type="text" id="formNamaKtp" class="form-input" style="text-transform:uppercase;" placeholder="Contoh: RIZKY FIRDAUS">
+            </div>
+            <div class="form-group">
+                <label>Nama Panggilan / WA</label>
+                <input type="text" id="formNamaWa" class="form-input" style="text-transform:uppercase;" placeholder="Contoh: RIZKY MLU">
+            </div>
+            <div class="form-group">
+                <label>Pelat Nomor</label>
+                <input type="text" id="formPlat" class="form-input" style="text-transform:uppercase;" placeholder="Contoh: B 1234 ABC">
+            </div>
+            <div class="form-group">
+                <label>Nomor HP (WhatsApp)</label>
+                <input type="number" id="formHp" class="form-input" placeholder="Contoh: 08123456789">
+            </div>
+            <div class="form-group">
+                <label>Jabatan / Role</label>
+                <select id="formRole" class="form-input">
+                    <option value="KELUARGA MLU">Keluarga MLU (Member Biasa)</option>
+                    <option value="KORLAP">Korlap</option>
+                    <option value="HUMAS">Humas</option>
+                    <option value="SATGAS">Satgas</option>
+                    <option value="SEKRETARIS">Sekretaris</option>
+                    <option value="WAKIL KETUA">Wakil Ketua</option>
+                    <option value="KETUA UMUM">Ketua Umum</option>
+                    <option value="PEMBINA">Pembina</option>
+                </select>
+            </div>
+            
+            <button class="btn-save" id="btnSave" onclick="saveData()">SIMPAN DATA</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="window.location.href='mcc_peta.html'"><i class="fa-solid fa-map-location-dot"></i><span>Peta</span></button>
+        <button class="nav-item active"><i class="fa-solid fa-users"></i><span>Anggota</span></button>
+        <button class="nav-item" onclick="window.location.href='mcc_keuangan.html'"><i class="fa-solid fa-wallet"></i><span>Keuangan</span></button>
+        <button class="nav-item" onclick="window.location.href='mcc_antrean.html'"><i class="fa-solid fa-clipboard-list"></i><span>Antrean</span></button>
+        <button class="nav-item" onclick="window.location.href='mcc_pesan.html'"><i class="fa-solid fa-bullhorn"></i><span>Pesan</span></button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // KONEKSI FIREBASE UTAMA (MLU)
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", 
+            authDomain: "rtomaka-e67b5.firebaseapp.com", 
+            projectId: "rtomaka-e67b5" 
+        };
+        const app = initializeApp(firebaseConfig); 
+        const db = getFirestore(app);
+
+        // Koleksi yang kita pakai berdasarkan file data_anggota.html Bapak sebelumnya
+        const refAnggota = collection(db, "mlu_members");
+        let allMembers = [];
+
+        // 1. TARIK DATA DARI FIREBASE (Real-Time)
+        onSnapshot(query(refAnggota, orderBy("namaKtp", "asc")), (snapshot) => {
+            allMembers = [];
+            snapshot.forEach((doc) => {
+                allMembers.push({ id: doc.id, ...doc.data() });
+            });
+            renderList(allMembers);
+        });
+
+        // 2. RENDER / CETAK HTML KE LAYAR
+        function renderList(dataArray) {
+            const listContainer = document.getElementById('memberList');
+            listContainer.innerHTML = '';
+            
+            if (dataArray.length === 0) {
+                listContainer.innerHTML = '<p style="text-align:center; color:#94a3b8; font-size:13px; margin-top:20px;">Data tidak ditemukan.</p>';
+                return;
+            }
+
+            dataArray.forEach(m => {
+                const nama = m.namaKtp || m.namaWa || m.namaLengkap || m.nama || "TANPA NAMA";
+                const plat = m.plat || "TIDAK ADA PLAT";
+                const role = m.role || "KELUARGA MLU";
+                const inisial = nama.charAt(0).toUpperCase();
+                
+                const isPengurus = role !== 'KELUARGA MLU';
+                const roleClass = isPengurus ? 'badge-admin' : '';
+
+                listContainer.innerHTML += `
+                    <div class="card-member">
+                        <div class="member-avatar">${inisial}</div>
+                        <div class="member-info">
+                            <h4 class="member-name">${nama}</h4>
+                            <p class="member-plat">${plat}</p>
+                            <span class="badge ${roleClass}">${role}</span>
+                        </div>
+                        <div class="action-group">
+                            <button class="btn-icon btn-edit" onclick="openEditModal('${m.id}')"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn-icon btn-del" onclick="hapusData('${m.id}', '${nama}')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // 3. FITUR PENCARIAN (LIVE SEARCH)
+        window.filterList = () => {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allMembers.filter(m => {
+                const n = (m.namaKtp || m.namaWa || m.nama || "").toLowerCase();
+                const p = (m.plat || "").toLowerCase();
+                return n.includes(keyword) || p.includes(keyword);
+            });
+            renderList(filtered);
+        };
+
+        // 4. KONTROL MODAL (POPUP FORM)
+        const modal = document.getElementById('formModal');
+        
+        window.openModal = () => {
+            // Bersihkan form untuk Tambah Data
+            document.getElementById('formId').value = '';
+            document.getElementById('formNamaKtp').value = '';
+            document.getElementById('formNamaWa').value = '';
+            document.getElementById('formPlat').value = '';
+            document.getElementById('formHp').value = '';
+            document.getElementById('formRole').value = 'KELUARGA MLU';
+            
+            document.getElementById('modalTitleText').innerText = "Tambah Anggota Baru";
+            modal.style.display = 'flex';
+        };
+
+        window.openEditModal = (id) => {
+            // Cari data anggota yang diklik, lalu masukkan ke dalam form
+            const m = allMembers.find(x => x.id === id); 
+            if(!m) return;
+            
+            document.getElementById('formId').value = id;
+            document.getElementById('formNamaKtp').value = m.namaKtp || m.nama || '';
+            document.getElementById('formNamaWa').value = m.namaWa || m.nama || '';
+            document.getElementById('formPlat').value = m.plat || '';
+            document.getElementById('formHp').value = m.hp || '';
+            document.getElementById('formRole').value = m.role || 'KELUARGA MLU';
+            
+            document.getElementById('modalTitleText').innerText = "Edit Data Anggota";
+            modal.style.display = 'flex';
+        };
+
+        window.closeModal = () => {
+            modal.style.display = 'none';
+        };
+
+        // 5. EKSEKUSI SIMPAN (TAMBAH / UPDATE)
+        window.saveData = async () => {
+            const id = document.getElementById('formId').value;
+            const namaKtp = document.getElementById('formNamaKtp').value.trim().toUpperCase();
+            const namaWa = document.getElementById('formNamaWa').value.trim().toUpperCase();
+            const plat = document.getElementById('formPlat').value.trim().toUpperCase();
+            const hp = document.getElementById('formHp').value.trim();
+            const role = document.getElementById('formRole').value;
+
+            // Validasi dasar
+            if(!namaKtp || !plat) {
+                alert("Nama KTP dan Pelat Nomor WAJIB diisi!");
+                return;
+            }
+
+            const btn = document.getElementById('btnSave'); 
+            btn.innerText = "MENYIMPAN..."; 
+            btn.style.opacity = '0.7';
+
+            try {
+                // Bungkus data yang mau dikirim ke Firebase
+                let payload = { 
+                    namaKtp: namaKtp, 
+                    namaWa: namaWa, 
+                    nama: namaWa, // Fallback untuk sistem lama
+                    plat: plat, 
+                    hp: hp, 
+                    role: role 
+                };
+
+                if (id) {
+                    // JIKA ID ADA = UPDATE DATA LAMA
+                    await updateDoc(doc(db, "mlu_members", id), payload);
+                } else {
+                    // JIKA ID KOSONG = BUAT DATA BARU
+                    await addDoc(collection(db, "mlu_members"), payload);
+                }
+                
+                closeModal();
+            } catch (error) { 
+                alert("Sistem Error Gagal Menyimpan: " + error.message); 
+            } finally { 
+                btn.innerText = "SIMPAN DATA"; 
+                btn.style.opacity = '1'; 
+            }
+        };
+
+        // 6. EKSEKUSI HAPUS
+        window.hapusData = async (id, nama) => {
+            const konfirmasi = confirm(`PERINGATAN!\n\nApakah Bapak yakin ingin MENGHAPUS secara permanen anggota bernama:\n${nama}?`);
+            if(konfirmasi) {
+                try {
+                    await deleteDoc(doc(db, "mlu_members", id));
+                } catch (error) {
+                    alert("Gagal menghapus: " + error.message);
+                }
+            }
+        };
+    </script>
+</body>
+</html>
