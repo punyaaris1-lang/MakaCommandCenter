@@ -4,80 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MCC - Pusat Kendali Anggota</title>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        body { background: #f4f7f6; color: #1e293b; font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 90px; }
-        .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 990; }
-        .header h2 { margin: 0; font-size: 20px; font-weight: 800; color: #2563eb; }
-        .header small { color: #64748b; font-size: 12px; font-weight: 600; }
+        body { background: #f4f7f6; color: #1e293b; font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 100px; }
+        .header { background: #fff; padding: 20px 15px; text-align: center; box-shadow: 0 2px 15px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 990; border-bottom: 3px solid #2563eb; }
+        .header h2 { margin: 0; font-family: 'Outfit'; font-size: 22px; color: #2563eb; text-transform: uppercase; }
         
         .main-panel { padding: 15px; }
-        .search-box { width: 100%; padding: 14px 15px; border-radius: 12px; border: 2px solid #e2e8f0; margin-bottom: 15px; font-size: 14px; box-sizing: border-box; outline: none; }
-        .search-box:focus { border-color: #2563eb; }
+        .search-box { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #e2e8f0; margin-bottom: 15px; font-size: 14px; box-sizing: border-box; outline: none; transition: 0.3s; }
+        .search-box:focus { border-color: #2563eb; box-shadow: 0 0 15px rgba(37,99,235,0.1); }
         
         .grid-anggota { display: flex; flex-direction: column; gap: 12px; }
-        .card-member { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .member-avatar { width: 45px; height: 45px; background: #2563eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white; font-size: 18px; flex-shrink: 0; }
-        .member-info { flex: 1; overflow: hidden; }
-        .member-name { margin: 0 0 4px 0; font-size: 15px; font-weight: 800; color: #1e293b; }
-        .member-plat { font-size: 13px; font-family: 'Courier New', monospace; font-weight: 800; color: #64748b; margin: 0; }
+        .card-member { background: #fff; border-radius: 18px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }
+        .card-pengurus { background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%); border-color: #fcd34d; }
         
-        .action-group { display: flex; flex-direction: column; gap: 6px; }
-        .btn-icon { width: 35px; height: 35px; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .m-photo { width: 55px; height: 55px; border-radius: 15px; object-fit: cover; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; flex-shrink: 0; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
+        
+        .member-info { flex: 1; min-width: 0; }
+        .member-name { margin: 0; font-family: 'Outfit'; font-size: 16px; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .member-plat { font-size: 12px; font-weight: 800; color: #2563eb; margin: 2px 0; letter-spacing: 0.5px; }
+        .badge { display: inline-block; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; margin-top: 4px; }
+        .bg-member { background: #f1f5f9; color: #64748b; }
+        .bg-pengurus { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
+
+        .action-group { display: flex; flex-direction: column; gap: 8px; }
+        .btn-icon { width: 38px; height: 38px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .btn-edit { background: #eff6ff; color: #2563eb; }
         .btn-del { background: #fef2f2; color: #ef4444; }
 
-        .fab-add { position: fixed; bottom: 85px; right: 20px; width: 60px; height: 60px; background: #2563eb; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 25px rgba(37,99,235,0.4); border: none; cursor: pointer; z-index: 990; }
+        .fab-add { position: fixed; bottom: 95px; right: 20px; width: 60px; height: 60px; background: #2563eb; color: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 25px rgba(37,99,235,0.4); border: 2px solid white; cursor: pointer; z-index: 1000; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.7); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; }
-        .modal-box { background: white; width: 90%; max-width: 400px; border-radius: 20px; padding: 25px; max-height: 85vh; overflow-y: auto; }
+        /* MODAL CSS */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
+        .modal-box { background: white; width: 100%; max-width: 400px; border-radius: 25px; padding: 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; }
         .form-group { margin-bottom: 15px; }
-        .form-input { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 600; box-sizing: border-box; }
-        .btn-save { width: 100%; padding: 16px; border: none; border-radius: 12px; background: #2563eb; color: white; font-weight: 800; cursor: pointer; }
+        .form-group label { font-size: 11px; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px; text-transform: uppercase; }
+        .form-input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-family: 'Inter'; font-weight: 600; box-sizing: border-box; outline: none; }
+        .btn-save { width: 100%; padding: 18px; border: none; border-radius: 15px; background: #2563eb; color: white; font-weight: 800; font-family: 'Outfit'; font-size: 16px; cursor: pointer; box-shadow: 0 10px 20px rgba(37,99,235,0.2); margin-top: 10px; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e2e8f0; z-index: 999; }
-        .nav-item { background: none; border: none; color: #64748b; font-size: 20px; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 20%; }
-        .nav-item span { font-size: 10px; margin-top: 4px; font-weight: 600; }
-        .nav-item.active { color: #2563eb; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e2e8f0; z-index: 999; }
+        .nav-item { background: none; border: none; color: #94a3b8; font-size: 22px; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 20%; transition: 0.3s; }
+        .nav-item span { font-size: 10px; margin-top: 5px; font-weight: 700; }
+        .nav-item.active { color: #2563eb; transform: translateY(-3px); }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h2>MCC SYSTEM</h2>
-        <small>Pusat Kendali Anggota</small>
+        <small style="color:#64748b; font-weight:700;">COMMAND CENTER // DATA ANGGOTA</small>
     </div>
 
     <div class="main-panel">
         <input type="text" id="searchInput" class="search-box" placeholder="🔍 Cari nama atau pelat nomor..." onkeyup="filterList()">
         <div id="memberList" class="grid-anggota">
-            <p style="text-align: center; color: #94a3b8;"><i class="fa-solid fa-spinner fa-spin"></i> Menghubungkan ke database...</p>
+            <p style="text-align: center; color: #94a3b8; padding: 40px;"><i class="fa-solid fa-spinner fa-spin fa-2x"></i></p>
         </div>
     </div>
 
-    <button class="fab-add" onclick="openModal()"><i class="fa-solid fa-plus"></i></button>
+    <button class="fab-add" onclick="openModal()"><i class="fa-solid fa-user-plus"></i></button>
 
     <div class="modal-overlay" id="formModal">
         <div class="modal-box">
-            <h3 id="modalTitleText" style="margin-bottom: 20px;">Tambah Anggota</h3>
+            <h3 id="modalTitleText" style="font-family:'Outfit'; margin-top:0;">Tambah Anggota</h3>
             <input type="hidden" id="formId">
             <div class="form-group"><label>Nama KTP</label><input type="text" id="formNamaKtp" class="form-input" style="text-transform:uppercase;"></div>
-            <div class="form-group"><label>Nama WA</label><input type="text" id="formNamaWa" class="form-input" style="text-transform:uppercase;"></div>
+            <div class="form-group"><label>Nama Panggilan</label><input type="text" id="formNamaWa" class="form-input" style="text-transform:uppercase;"></div>
             <div class="form-group"><label>Pelat Nomor</label><input type="text" id="formPlat" class="form-input" style="text-transform:uppercase;"></div>
-            <div class="form-group"><label>WhatsApp</label><input type="number" id="formHp" class="form-input"></div>
+            <div class="form-group"><label>Nomor WhatsApp</label><input type="number" id="formHp" class="form-input"></div>
             <div class="form-group">
-                <label>Jabatan</label>
+                <label>Jabatan Organisasi</label>
                 <select id="formRole" class="form-input">
-                    <option value="KELUARGA MLU">KELUARGA MLU</option>
-                    <option value="KORLAP">KORLAP</option>
-                    <option value="PENGURUS">PENGURUS</option>
+                    <option value="KELUARGA MLU">Keluarga MLU (Member)</option>
+                    <option value="KORLAP">Korlap</option>
+                    <option value="HUMAS">Humas</option>
+                    <option value="SATGAS">Satgas</option>
+                    <option value="SEKRETARIS">Sekretaris</option>
+                    <option value="WAKIL KETUA">Wakil Ketua</option>
+                    <option value="KETUA UMUM">Ketua Umum</option>
+                    <option value="PEMBINA">Pembina</option>
                 </select>
             </div>
-            <button class="btn-save" onclick="saveData()">SIMPAN DATA</button>
-            <button onclick="closeModal()" style="width:100%; margin-top:10px; background:none; border:none; color:gray; cursor:pointer;">BATAL</button>
+            <button class="btn-save" onclick="saveData()">SIMPAN KE FIREBASE</button>
+            <button onclick="closeModal()" style="width:100%; margin-top:15px; background:none; border:none; color:#94a3b8; font-weight:700; cursor:pointer;">BATALKAN</button>
         </div>
     </div>
 
@@ -109,24 +119,43 @@
         onSnapshot(refAnggota, (snapshot) => {
             allMembers = [];
             snapshot.forEach((doc) => { allMembers.push({ id: doc.id, ...doc.data() }); });
-            allMembers.sort((a, b) => (a.namaKtp || "").localeCompare(b.namaKtp || ""));
+            
+            // LOGIKA AUTO-SORT: Pengurus di Atas, lalu urut Nama
+            allMembers.sort((a, b) => {
+                const aIsP = (a.role && a.role !== 'KELUARGA MLU');
+                const bIsP = (b.role && b.role !== 'KELUARGA MLU');
+                if (aIsP && !bIsP) return -1;
+                if (!aIsP && bIsP) return 1;
+                return (a.namaKtp || "").localeCompare(b.namaKtp || "");
+            });
+            
             renderList(allMembers);
-        }, (err) => { document.getElementById('memberList').innerHTML = `<p style="color:red; text-align:center;">Error: ${err.message}</p>`; });
+        }, (err) => { alert("Error database: " + err.message); });
 
         function renderList(data) {
             const list = document.getElementById('memberList');
-            list.innerHTML = data.length ? '' : '<p style="text-align:center;">Tidak ada data.</p>';
+            list.innerHTML = '';
             data.forEach(m => {
+                const isP = (m.role && m.role !== 'KELUARGA MLU');
+                const name = m.namaKtp || m.namaWa || "Tanpa Nama";
+                
+                // LOGIKA FOTO / INISIAL
+                let photoHtml = `<div class="m-photo">${name.charAt(0)}</div>`;
+                if(m.foto && m.foto.length > 100) {
+                    photoHtml = `<img src="${m.foto}" class="m-photo">`;
+                }
+
                 list.innerHTML += `
-                    <div class="card-member">
-                        <div class="member-avatar">${(m.namaKtp || "?").charAt(0)}</div>
+                    <div class="card-member ${isP ? 'card-pengurus' : ''}">
+                        ${photoHtml}
                         <div class="member-info">
-                            <h4 class="member-name">${m.namaKtp || m.namaWa || "Member"}</h4>
+                            <h4 class="member-name">${name}</h4>
                             <p class="member-plat">${m.plat || "-"}</p>
+                            <span class="badge ${isP ? 'bg-pengurus' : 'bg-member'}">${m.role || 'MEMBER'}</span>
                         </div>
                         <div class="action-group">
-                            <button class="btn-icon btn-edit" onclick="openEditModal('${m.id}')"><i class="fa-solid fa-pen"></i></button>
-                            <button class="btn-icon btn-del" onclick="hapusData('${m.id}', '${m.namaKtp}')"><i class="fa-solid fa-trash"></i></button>
+                            <button class="btn-icon btn-edit" onclick="openEditModal('${m.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button class="btn-icon btn-del" onclick="hapusData('${m.id}', '${name}')"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </div>`;
             });
@@ -137,8 +166,13 @@
             renderList(allMembers.filter(m => (m.namaKtp || "").toLowerCase().includes(k) || (m.plat || "").toLowerCase().includes(k)));
         };
 
-        window.openModal = () => { document.getElementById('formId').value = ''; document.getElementById('formModal').style.display = 'flex'; };
+        window.openModal = () => { 
+            document.getElementById('formId').value = ''; 
+            document.getElementById('formModal').style.display = 'flex';
+            document.getElementById('modalTitleText').innerText = "Tambah Anggota Baru";
+        };
         window.closeModal = () => { document.getElementById('formModal').style.display = 'none'; };
+        
         window.openEditModal = (id) => {
             const m = allMembers.find(x => x.id === id);
             document.getElementById('formId').value = id;
@@ -147,6 +181,7 @@
             document.getElementById('formPlat').value = m.plat || '';
             document.getElementById('formHp').value = m.hp || '';
             document.getElementById('formRole').value = m.role || 'KELUARGA MLU';
+            document.getElementById('modalTitleText').innerText = "Edit Data Anggota";
             document.getElementById('formModal').style.display = 'flex';
         };
 
@@ -167,7 +202,9 @@
         };
 
         window.hapusData = async (id, nama) => {
-            if(confirm(`Hapus ${nama}?`)) await deleteDoc(doc(db, "mlu_members", id));
+            if(confirm(`⚠️ HAPUS PERMANEN?\nAnggota: ${nama}\n\nData tidak bisa dikembalikan!`)) {
+                await deleteDoc(doc(db, "mlu_members", id));
+            }
         };
     </script>
 </body>
