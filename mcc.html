@@ -162,11 +162,11 @@
         btnToggleRadar.addEventListener('click', jalankanRadar); if (localStorage.getItem('mcc_radar_status') === 'ON') jalankanRadar();
 
         // ==============================================================
-        // LOGIKA PENARIKAN DATA ANTREAN (BERDASARKAN SCREENSHOT TERBARU)
+        // LOGIKA PENARIKAN DATA ANTREAN (JALUR "UTAMA")
         // ==============================================================
 
-        // 1. DATA GADING (MAX 3 SLOT) - Dokumen: "snapshot"
-        const refGadingReal = doc(dbGading, "antrian", "snapshot");
+        // 1. DATA GADING (MAX 3 SLOT) - Dokumen: "utama"
+        const refGadingReal = doc(dbGading, "antrian", "utama");
         onSnapshot(refGadingReal, (doc) => {
             const elSlot = document.getElementById('gading-slot');
             const elWait = document.getElementById('gading-wait');
@@ -175,24 +175,21 @@
             if (doc.exists()) {
                 const data = doc.data();
                 
-                // Hitung Slot Terpakai dari array chargingSlots
+                // Hitung Slot Terpakai (Abaikan slot yang isinya null)
                 let slotTerpakai = 0;
                 if (data.chargingSlots && Array.isArray(data.chargingSlots)) {
-                    // Filter untuk memastikan hanya menghitung slot yang benar-benar ada isinya
                     slotTerpakai = data.chargingSlots.filter(slot => slot !== null).length; 
                 }
                 
-                // Hitung Unit Menunggu dari array waitingQueue
+                // Hitung Unit Menunggu
                 let unitMenunggu = 0;
                 if (data.waitingQueue && Array.isArray(data.waitingQueue)) {
                     unitMenunggu = data.waitingQueue.length;
                 }
 
-                // Tampilkan ke layar
                 elSlot.innerText = `${slotTerpakai}/3`;
                 elWait.innerText = unitMenunggu;
                 
-                // Ubah warna indikator merah/hijau
                 if(slotTerpakai >= 3) { elSlot.classList.add('text-red'); elSlot.classList.remove('text-green'); } 
                 else { elSlot.classList.add('text-green'); elSlot.classList.remove('text-red'); }
 
@@ -200,9 +197,8 @@
             }
         });
 
-        // 2. DATA KARTIKA CHANDRA (MAX 5 SLOT) 
-        // Asumsi struktur sama: Dokumen "snapshot"
-        const refKCReal = doc(dbKC, "antrian", "snapshot"); 
+        // 2. DATA KARTIKA CHANDRA (MAX 5 SLOT) - Dokumen: "utama"
+        const refKCReal = doc(dbKC, "antrian", "utama"); 
         onSnapshot(refKCReal, (doc) => {
             const elSlot = document.getElementById('kc-slot');
             const elWait = document.getElementById('kc-wait');
