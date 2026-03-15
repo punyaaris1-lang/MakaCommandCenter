@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MCC - Pusat Kendali Keuangan</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --royal-blue: #0A2259; --electric-blue: #2563eb; --success: #10B981; --danger: #ef4444; --warning: #f59e0b; }
+        body { background: #f4f7f6; color: #1e293b; font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 100px; }
+        .header { background: #fff; padding: 20px 15px; text-align: center; box-shadow: 0 2px 15px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 990; border-bottom: 3px solid var(--electric-blue); }
+        .header h2 { margin: 0; font-family: 'Space Grotesk'; font-size: 22px; color: var(--electric-blue); text-transform: uppercase; }
+        
+        .main-panel { padding: 15px; }
+
+        /* DASHBOARD SALDO */
+        .f-card { border-radius: 20px; padding: 20px; color: white; margin-bottom: 15px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .card-kas { background: linear-gradient(135deg, var(--royal-blue) 0%, var(--electric-blue) 100%); }
+        .card-tabungan { background: linear-gradient(135deg, #064e3b 0%, var(--success) 100%); }
+        .f-label { font-size: 10px; font-weight: 800; letter-spacing: 1px; opacity: 0.8; text-transform: uppercase; }
+        .f-amount { font-family: 'Space Grotesk'; font-size: 30px; font-weight: 900; margin: 5px 0; }
+        
+        /* TABS KONTROL */
+        .tab-menu { display: flex; background: #fff; border-radius: 12px; padding: 5px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .tab-btn { flex: 1; padding: 10px; border: none; background: none; font-weight: 800; font-size: 11px; color: #64748b; cursor: pointer; border-radius: 8px; transition: 0.3s; }
+        .tab-btn.active { background: var(--electric-blue); color: white; }
+
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+
+        /* LIST ITEM */
+        .item-list { background: white; border-radius: 15px; padding: 15px; margin-bottom: 10px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .item-info h4 { margin: 0; font-size: 14px; color: #1e293b; }
+        .item-info p { margin: 3px 0 0 0; font-size: 11px; color: #64748b; }
+        .val-badge { font-family: 'Space Grotesk'; font-weight: 900; font-size: 14px; }
+        
+        /* TOMBOL AKSI */
+        .btn-action { padding: 8px 15px; border-radius: 8px; border: none; font-weight: 800; font-size: 11px; cursor: pointer; }
+        .btn-approve { background: var(--success); color: white; }
+        .btn-reject { background: #f1f5f9; color: var(--danger); margin-left: 5px; }
+        .fab-add { position: fixed; bottom: 95px; right: 20px; width: 60px; height: 60px; background: var(--electric-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 25px rgba(37,99,235,0.4); border: 2px solid white; z-index: 1000; }
+
+        /* MODAL */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
+        .modal-box { background: white; width: 100%; max-width: 400px; border-radius: 25px; padding: 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { font-size: 11px; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px; text-transform: uppercase; }
+        .form-input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-family: 'Inter'; font-weight: 600; box-sizing: border-box; outline: none; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e2e8f0; z-index: 999; }
+        .nav-item { background: none; border: none; color: #94a3b8; font-size: 22px; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 20%; }
+        .nav-item span { font-size: 10px; margin-top: 5px; font-weight: 700; }
+        .nav-item.active { color: var(--electric-blue); transform: translateY(-3px); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>MCC FINANCE</h2>
+        <small style="color:#64748b; font-weight:700;">COMMAND CENTER // AUDIT & EKSEKUSI</small>
+    </div>
+
+    <div class="main-panel">
+        <div class="f-card card-kas">
+            <div class="f-label">Kas Organisasi (MLU)</div>
+            <div class="f-amount" id="total-kas">Rp 0</div>
+        </div>
+
+        <div class="f-card card-tabungan">
+            <div class="f-label">Total Tabungan Anggota</div>
+            <div class="f-amount" id="total-tabungan">Rp 0</div>
+        </div>
+
+        <div class="tab-menu">
+            <button class="tab-btn active" onclick="switchSection('val-tabungan', this)">VALIDASI TABUNGAN</button>
+            <button class="tab-btn" onclick="switchSection('riwayat-kas', this)">RIWAYAT KAS</button>
+            <button class="tab-btn" onclick="switchSection('tarik-dana', this)">TARIK SALDO</button>
+        </div>
+
+        <div id="val-tabungan" class="content-section active">
+            <h4 style="margin: 0 0 15px 5px;">Antrean Verifikasi QRIS</h4>
+            <div id="list-verifikasi">
+                <p style="text-align: center; color: #94a3b8; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> Menunggu antrean...</p>
+            </div>
+        </div>
+
+        <div id="riwayat-kas" class="content-section">
+            <h4 style="margin: 0 0 15px 5px;">Mutasi Kas Terakhir</h4>
+            <div id="list-kas"></div>
+        </div>
+
+        <div id="tarik-dana" class="content-section">
+            <div style="background:#fffbeb; border:1px solid #fcd34d; padding:15px; border-radius:12px; margin-bottom:15px; font-size:12px; color:#92400e;">
+                <b>MENU TARIK DANA:</b> Gunakan ini jika ada anggota yang ingin menarik saldo tabungannya secara tunai.
+            </div>
+            <div id="list-tarik-anggota"></div>
+        </div>
+    </div>
+
+    <button class="fab-add" onclick="openModalKas()"><i class="fa-solid fa-plus"></i></button>
+
+    <div class="modal-overlay" id="modalKas">
+        <div class="modal-box">
+            <h3 style="font-family:'Space Grotesk'; margin-top:0;">Input Kas Organisasi</h3>
+            <div class="form-group">
+                <label>Jenis Transaksi</label>
+                <select id="kasType" class="form-input">
+                    <option value="IN">PEMASUKAN (+)</option>
+                    <option value="OUT">PENGELUARAN (-)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nominal (Rp)</label>
+                <input type="number" id="kasAmount" class="form-input" placeholder="0">
+            </div>
+            <div class="form-group">
+                <label>Keterangan</label>
+                <input type="text" id="kasDesc" class="form-input" placeholder="Beli banner, iuran bulanan, dll">
+            </div>
+            <button class="btn-approve" style="width:100%; padding:18px; border-radius:15px;" onclick="saveKas()">SIMPAN TRANSAKSI</button>
+            <button onclick="closeModalKas()" style="width:100%; margin-top:15px; background:none; border:none; color:gray; font-weight:700;">BATAL</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="window.location.href='mcc_peta.html'"><i class="fa-solid fa-map-location-dot"></i><span>Peta</span></button>
+        <button class="nav-item" onclick="window.location.href='mcc_anggota.html'"><i class="fa-solid fa-users"></i><span>Anggota</span></button>
+        <button class="nav-item active"><i class="fa-solid fa-wallet"></i><span>Keuangan</span></button>
+        <button class="nav-item" onclick="window.location.href='mcc_antrean.html'"><i class="fa-solid fa-clipboard-list"></i><span>Antrean</span></button>
+        <button class="nav-item" onclick="window.location.href='mcc_pesan.html'"><i class="fa-solid fa-bullhorn"></i><span>Pesan</span></button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, doc, addDoc, updateDoc, deleteDoc, query, where, orderBy, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", authDomain: "rtomaka-e67b5.firebaseapp.com", projectId: "rtomaka-e67b5", storageBucket: "rtomaka-e67b5.firebasestorage.app", messagingSenderId: "472036722228", appId: "1:472036722228:web:11d520f9204db317d02c61" };
+        const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+
+        // 1. MONITOR TOTAL KAS & TABUNGAN
+        onSnapshot(collection(db, "mlu_finance"), (snap) => {
+            let total = 0;
+            snap.forEach(d => { const data = d.data(); if(data.type === 'IN' || data.type === 'IN_COLLECTIVE') total += data.amount; else total -= data.amount; });
+            document.getElementById('total-kas').innerText = "Rp " + total.toLocaleString('id-ID');
+        });
+
+        onSnapshot(collection(db, "mlu_members"), (snap) => {
+            let total = 0; let membersHtml = '';
+            snap.forEach(d => { 
+                const data = d.data(); 
+                if(data.saldoTabungan) total += data.saldoTabungan;
+                // Render List Tarik Dana
+                membersHtml += `
+                    <div class="item-list">
+                        <div class="item-info">
+                            <h4>${data.namaKtp || data.namaWa}</h4>
+                            <p>${data.plat}</p>
+                            <p style="color:var(--success); font-weight:800;">Saldo: Rp ${(data.saldoTabungan||0).toLocaleString('id-ID')}</p>
+                        </div>
+                        <button class="btn-action btn-reject" onclick="prosesTarik('${d.id}', '${data.namaKtp}', ${data.saldoTabungan||0})">TARIK TUNAI</button>
+                    </div>`;
+            });
+            document.getElementById('total-tabungan').innerText = "Rp " + total.toLocaleString('id-ID');
+            document.getElementById('list-tarik-anggota').innerHTML = membersHtml;
+        });
+
+        // 2. MONITOR ANTREAN VERIFIKASI (PENDING)
+        const qVerif = query(collection(db, "mlu_tabungan_trx"), where("status", "==", "PENDING"));
+        onSnapshot(qVerif, (snap) => {
+            const cont = document.getElementById('list-verifikasi'); cont.innerHTML = snap.empty ? '<p style="text-align:center; color:gray; font-size:12px;">Tidak ada antrean masuk.</p>' : '';
+            snap.forEach(d => {
+                const data = d.data();
+                cont.innerHTML += `
+                    <div class="item-list">
+                        <div class="item-info">
+                            <h4>${data.memberName}</h4>
+                            <p>${new Date(data.timestamp).toLocaleString('id-ID')}</p>
+                            <div class="val-badge" style="color:var(--success);">+ Rp ${data.amount.toLocaleString('id-ID')}</div>
+                        </div>
+                        <div>
+                            <button class="btn-action btn-approve" onclick="approveTabungan('${d.id}', '${data.memberId}', ${data.amount})">CEKLIST</button>
+                            <button class="btn-action btn-reject" onclick="rejectTabungan('${d.id}')">X</button>
+                        </div>
+                    </div>`;
+            });
+        });
+
+        // 3. SEKSI RIWAYAT KAS
+        onSnapshot(query(collection(db, "mlu_finance"), orderBy("timestamp", "desc")), (snap) => {
+            const cont = document.getElementById('list-kas'); cont.innerHTML = '';
+            snap.forEach(d => {
+                const data = d.data(); const isIn = data.type === 'IN' || data.type === 'IN_COLLECTIVE';
+                cont.innerHTML += `
+                    <div class="item-list">
+                        <div class="item-info">
+                            <h4>${data.description}</h4>
+                            <p>${data.date || ''} • Oleh: ${data.actor || 'Admin'}</p>
+                        </div>
+                        <div class="val-badge" style="color:${isIn?'var(--success)':'var(--danger)'};">
+                            ${isIn?'+':'-'} Rp ${data.amount.toLocaleString('id-ID')}
+                        </div>
+                    </div>`;
+            });
+        });
+
+        // FUNGSI EKSEKUSI DEWA
+        window.approveTabungan = async (trxId, memberId, amount) => {
+            if(!confirm("Dana sudah Bapak cek masuk ke Rekening/QRIS?")) return;
+            await runTransaction(db, async (t) => {
+                const mRef = doc(db, "mlu_members", memberId); const tRef = doc(db, "mlu_tabungan_trx", trxId);
+                const mDoc = await t.get(mRef);
+                const saldoBaru = (mDoc.data().saldoTabungan || 0) + amount;
+                t.update(mRef, { saldoTabungan: saldoBaru });
+                t.update(tRef, { status: 'SUCCESS' });
+            });
+            alert("Berhasil! Saldo member bertambah.");
+        };
+
+        window.prosesTarik = async (memberId, nama, saldoSkrg) => {
+            const jml = prompt(`Tarik Saldo: ${nama}\nSaldo Saat Ini: Rp ${saldoSkrg.toLocaleString()}\n\nMasukkan Jumlah Tarik (Angka Saja):`);
+            if(!jml || isNaN(jml) || jml > saldoSkrg) return alert("Jumlah tidak valid atau saldo kurang!");
+            if(confirm(`Tarik Rp ${parseInt(jml).toLocaleString()} dari ${nama}?`)) {
+                await runTransaction(db, async (t) => {
+                    const mRef = doc(db, "mlu_members", memberId);
+                    const mDoc = await t.get(mRef);
+                    t.update(mRef, { saldoTabungan: mDoc.data().saldoTabungan - parseInt(jml) });
+                    await addDoc(collection(db, "mlu_tabungan_trx"), {
+                        memberId, memberName: nama, type: 'OUT', amount: parseInt(jml),
+                        desc: 'Tarik Tunai via Admin MCC', timestamp: Date.now(), status: 'SUCCESS'
+                    });
+                });
+                alert("Berhasil ditarik!");
+            }
+        };
+
+        window.saveKas = async () => {
+            const type = document.getElementById('kasType').value;
+            const amt = parseInt(document.getElementById('kasAmount').value);
+            const desc = document.getElementById('kasDesc').value;
+            if(!amt || !desc) return alert("Isi data lengkap!");
+            await addDoc(collection(db, "mlu_finance"), {
+                type, amount: amt, description: desc, timestamp: Date.now(),
+                date: new Date().toLocaleDateString('id-ID'), actor: "ADMIN MCC"
+            });
+            closeModalKas();
+        };
+
+        // UTILITIES
+        window.switchSection = (id, btn) => {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active'); btn.classList.add('active');
+        };
+        window.openModalKas = () => document.getElementById('modalKas').style.display = 'flex';
+        window.closeModalKas = () => document.getElementById('modalKas').style.display = 'none';
+        window.rejectTabungan = async (id) => { if(confirm("Tolak pengajuan ini?")) await deleteDoc(doc(db, "mlu_tabungan_trx", id)); };
+    </script>
+</body>
+</html>
