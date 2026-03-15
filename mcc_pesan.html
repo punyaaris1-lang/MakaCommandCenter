@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MCC - Broadcast Center</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --royal-blue: #0A2259; --electric-blue: #2563eb; --success: #10B981; --danger: #ef4444; }
+        body { background: #f4f7f6; color: #1e293b; font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 100px; }
+        .header { background: #fff; padding: 20px 15px; text-align: center; box-shadow: 0 2px 15px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 990; border-bottom: 3px solid var(--electric-blue); }
+        .header h2 { margin: 0; font-family: 'Space Grotesk'; font-size: 22px; color: var(--electric-blue); text-transform: uppercase; }
+        
+        .main-panel { padding: 15px; }
+
+        /* BROADCAST FORM */
+        .broadcast-card { background: white; border-radius: 20px; padding: 25px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { font-size: 11px; font-weight: 800; color: #64748b; display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .form-input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-family: 'Inter'; font-weight: 600; box-sizing: border-box; outline: none; }
+        .form-input:focus { border-color: var(--electric-blue); background: #fff; box-shadow: 0 0 15px rgba(37,99,235,0.1); }
+        textarea.form-input { height: 120px; resize: none; }
+
+        .btn-send { width: 100%; padding: 18px; border: none; border-radius: 15px; background: var(--electric-blue); color: white; font-weight: 800; font-family: 'Space Grotesk'; font-size: 16px; cursor: pointer; box-shadow: 0 10px 20px rgba(37,99,235,0.2); display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
+        .btn-send:active { transform: scale(0.98); }
+
+        /* RIWAYAT PESAN */
+        .history-title { font-family: 'Space Grotesk'; font-size: 14px; font-weight: 800; color: var(--royal-blue); margin: 25px 0 15px; border-left: 4px solid var(--electric-blue); padding-left: 10px; }
+        .msg-card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 12px; border: 1px solid #e2e8f0; position: relative; }
+        .msg-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 10px; font-weight: 800; color: #94a3b8; }
+        .msg-body { font-size: 13px; color: #1e293b; line-height: 1.5; font-weight: 500; }
+        .msg-tag { background: #eff6ff; color: var(--electric-blue); padding: 2px 8px; border-radius: 5px; font-size: 9px; }
+
+        /* BOTTOM NAV */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e2e8f0; z-index: 999; }
+        .nav-item { background: none; border: none; color: #94a3b8; font-size: 20px; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 20%; transition: 0.3s; }
+        .nav-item span { font-size: 10px; margin-top: 4px; font-weight: 600; }
+        .nav-item.active { color: var(--electric-blue); transform: translateY(-3px); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>MCC BROADCAST</h2>
+        <small style="color:#64748b; font-weight:700;">COMMAND CENTER // TRANSMISI PESAN</small>
+    </div>
+
+    <div class="main-panel">
+        
+        <div class="broadcast-card">
+            <div class="form-group">
+                <label>Judul Pengumuman</label>
+                <input type="text" id="msgTitle" class="form-input" placeholder="Contoh: INFO TOURING / UPDATE KAS">
+            </div>
+            <div class="form-group">
+                <label>Isi Pesan Massal</label>
+                <textarea id="msgBody" class="form-input" placeholder="Tulis instruksi Bapak di sini..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Target Pengiriman</label>
+                <select id="msgTarget" class="form-input">
+                    <option value="ALL">SELURUH ANGGOTA MLU</option>
+                    <option value="PENGURUS">KHUSUS PENGURUS</option>
+                    <option value="RTO">DIVISI RTO MAKA</option>
+                </select>
+            </div>
+            <button class="btn-send" onclick="sendBroadcast()">
+                <i class="fa-solid fa-paper-plane"></i> TRANSMISIKAN PESAN
+            </button>
+        </div>
+
+        <div class="history-title">RIWAYAT TRANSMISI TERAKHIR</div>
+        <div id="list-history">
+            <p style="text-align: center; color: #94a3b8; padding: 20px; font-size: 12px;">Memuat riwayat pesan...</p>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="window.location.href='mcc_peta.html'"><i class="fa-solid fa-map-location-dot"></i><span>Peta</span></button>
+        <button class="nav-item" onclick="window.location.href='mcc_anggota.html'"><i class="fa-solid fa-users"></i><span>Anggota</span></button>
+        <button class="nav-item" onclick="window.location.href='mcc_keuangan.html'"><i class="fa-solid fa-wallet"></i><span>Keuangan</span></button>
+        <button class="nav-item" onclick="window.location.href='mcc_antrean.html'"><i class="fa-solid fa-clipboard-list"></i><span>Antrean</span></button>
+        <button class="nav-item active"><i class="fa-solid fa-bullhorn"></i><span>Pesan</span></button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // CONFIG FIREBASE
+        const firebaseConfig = { apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", authDomain: "rtomaka-e67b5.firebaseapp.com", projectId: "rtomaka-e67b5" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 1. MONITOR RIWAYAT PESAN (Limit 10 pesan terakhir)
+        const q = query(collection(db, "mlu_broadcasts"), orderBy("timestamp", "desc"), limit(10));
+        onSnapshot(q, (snap) => {
+            const cont = document.getElementById('list-history');
+            cont.innerHTML = snap.empty ? '<p style="text-align:center; font-size:12px; color:gray;">Belum ada pesan terkirim.</p>' : '';
+            
+            snap.forEach(d => {
+                const data = d.data();
+                const date = new Date(data.timestamp).toLocaleString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+                cont.innerHTML += `
+                    <div class="msg-card">
+                        <div class="msg-header">
+                            <span>${date}</span>
+                            <span class="msg-tag">${data.target || 'ALL'}</span>
+                        </div>
+                        <div style="font-weight:800; font-size:14px; margin-bottom:5px; color:var(--royal-blue);">${data.title}</div>
+                        <div class="msg-body">${data.body}</div>
+                    </div>`;
+            });
+        });
+
+        // 2. FUNGSI KIRIM PESAN
+        window.sendBroadcast = async () => {
+            const title = document.getElementById('msgTitle').value.trim();
+            const body = document.getElementById('msgBody').value.trim();
+            const target = document.getElementById('msgTarget').value;
+
+            if(!title || !body) return alert("Harap isi Judul dan Isi Pesan!");
+
+            if(!confirm("Kirim pesan ini ke seluruh anggota?")) return;
+
+            try {
+                // Simpan ke Firestore (Aplikasi anggota harus dikoordinasikan untuk membaca koleksi ini)
+                await addDoc(collection(db, "mlu_broadcasts"), {
+                    title: title,
+                    body: body,
+                    target: target,
+                    timestamp: Date.now(),
+                    sender: "ADMIN MCC"
+                });
+
+                alert("Pesan berhasil ditransmisikan!");
+                document.getElementById('msgTitle').value = '';
+                document.getElementById('msgBody').value = '';
+            } catch (e) { alert("Gagal kirim: " + e.message); }
+        };
+    </script>
+</body>
+</html>
