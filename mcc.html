@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* CSS TETAP SAMA SEPERTI V3 TERANG */
         body { background: #f4f7f6; color: #1e293b; font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 70px; }
         .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 999; }
         .header h2 { margin: 0; font-size: 20px; font-weight: 800; color: #2563eb; }
@@ -76,13 +75,9 @@
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        // IMPORT FIRESTORE, BUKAN REALTIME DATABASE
         import { getFirestore, collection, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        // import { getMessaging } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging.js"; // Diaktifkan nanti saat butuh broadcast
 
-        // ==========================================
         // 1. KONEKSI FIREBASE UTAMA (MLU)
-        // ==========================================
         const configMLU = { 
             apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", 
             authDomain: "rtomaka-e67b5.firebaseapp.com", 
@@ -93,84 +88,55 @@
         };
         const app = initializeApp(configMLU); 
         const db = getFirestore(app);
-        // const messaging = getMessaging(app);
 
-        // ==========================================
         // 2. KONEKSI FIREBASE GADING
-        // ==========================================
-        const configGading = { 
-            apiKey: "AIzaSyB666i9lYWIpxOdkwpoX9EvFvHLmHczeq8", 
-            authDomain: "fcgadingnew22.firebaseapp.com", 
-            projectId: "fcgadingnew22" 
-        };
+        const configGading = { apiKey: "AIzaSyB666i9lYWIpxOdkwpoX9EvFvHLmHczeq8", authDomain: "fcgadingnew22.firebaseapp.com", projectId: "fcgadingnew22" };
         const appGading = initializeApp(configGading, "AppGading");
         const dbGading = getFirestore(appGading);
-        const refGading = doc(dbGading, "antrian", "utama");
 
-        // ==========================================
         // 3. KONEKSI FIREBASE KARTIKA CHANDRA
-        // ==========================================
-        const configKC = { 
-            apiKey: "AIzaSyDDVYQSjmJEn_RvIUotSxbh8L-ysJMCthk", 
-            authDomain: "kartikachandrafc.firebaseapp.com", 
-            projectId: "kartikachandrafc" 
-        };
+        const configKC = { apiKey: "AIzaSyDDVYQSjmJEn_RvIUotSxbh8L-ysJMCthk", authDomain: "kartikachandrafc.firebaseapp.com", projectId: "kartikachandrafc" };
         const appKC = initializeApp(configKC, "AppKC");
         const dbKC = getFirestore(appKC);
-        const refKC = doc(dbKC, "antrian", "utama");
 
-        // ==========================================
-        // PENCEGAHAN ERROR LOCAL STORAGE SEMENTARA
-        // ==========================================
-        /* KODE INI SAYA MATIKAN AGAR BAPAK TIDAK TERLEMPAR KE HALAMAN INDEX (YANG BELUM ADA DI REPO BARU)
-        let uData = null;
-        try { uData = JSON.parse(localStorage.getItem('maka_user')); } catch (e) {}
-        if (!uData || !uData.plat) window.location.href = 'index.html'; 
-        const myName = uData.namaKtp || uData.namaWa || "User";
-        const myPlat = uData.plat || "B XXXX XX";
-        */
-
-        // ==========================================
         // INISIALISASI PETA LEAFLET
-        // ==========================================
         let map = L.map('map', {zoomControl: false}).setView([-6.200000, 106.816666], 11);
         L.control.zoom({ position: 'topright' }).addTo(map);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
 
-        let markersGroup = L.layerGroup().addTo(map); // Melanjutkan variabel Bapak yang terpotong
+        let markersGroup = L.layerGroup().addTo(map);
 
         // ==========================================
-        // LOGIKA RADAR & FIRESTORE REAL-TIME
+        // LOGIKA RADAR DENGAN "MEMORY / AUTO-SAVE"
         // ==========================================
         let radarActive = false;
-        let unsubscribe = null; // Variabel untuk mematikan listener Firestore
+        let unsubscribe = null; 
         
         const btnToggleRadar = document.getElementById('btnToggleRadar');
         const radarOverlay = document.getElementById('radar-sweep');
 
-        btnToggleRadar.addEventListener('click', () => {
+        // Fungsi utama menyalakan & mematikan radar
+        function jalankanRadar() {
             radarActive = !radarActive;
 
             if (radarActive) {
-                // NYALAKAN RADAR
+                // SIMPAN KE MEMORI: Radar sedang ON
+                localStorage.setItem('mcc_radar_status', 'ON');
+
                 radarOverlay.style.display = 'block';
                 btnToggleRadar.classList.add('on');
                 btnToggleRadar.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> RADAR AKTIF & TRACKING...';
 
-                // BACA KOLEKSI FIRESTORE (onSnapshot = Real-time tracking)
                 const locRef = collection(db, "fc_locations");
-                
                 unsubscribe = onSnapshot(locRef, (querySnapshot) => {
-                    markersGroup.clearLayers(); // Bersihkan peta sebelum render titik baru
+                    markersGroup.clearLayers(); 
                     
                     querySnapshot.forEach((doc) => {
                         const data = doc.data();
-                        
                         const lat = data.latitude || data.lat;
                         const lng = data.longitude || data.lng;
                         
                         if (lat && lng) {
-                            // Desain Marker Titik Biru
                             const customIcon = L.divIcon({
                                 className: 'custom-marker',
                                 html: '<div style="width: 14px; height: 14px; background: #2563eb; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(37,99,235,0.8);"></div>',
@@ -178,7 +144,6 @@
                             });
 
                             const nama = data.nama || data.namaLengkap || doc.id;
-                            
                             const marker = L.marker([lat, lng], {icon: customIcon})
                                 .bindPopup(`<b>${nama}</b>`);
                             
@@ -187,22 +152,28 @@
                     });
                 });
             } else {
-                // MATIKAN RADAR
+                // SIMPAN KE MEMORI: Radar sedang OFF
+                localStorage.setItem('mcc_radar_status', 'OFF');
+
                 radarOverlay.style.display = 'none';
                 btnToggleRadar.classList.remove('on');
                 btnToggleRadar.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> AKTIFKAN RADAR';
                 
-                // Hentikan penarikan data dari Firestore
-                if (unsubscribe) {
-                    unsubscribe();
-                }
+                if (unsubscribe) { unsubscribe(); }
                 markersGroup.clearLayers();
             }
-        });
+        }
 
-        // ==========================================
+        // 1. Hubungkan tombol dengan fungsi di atas
+        btnToggleRadar.addEventListener('click', jalankanRadar);
+
+        // 2. CEK MEMORI SAAT HALAMAN DIBUKA/DI-REFRESH
+        // Jika sebelumnya disimpan 'ON', maka otomatis jalankan fungsi radar!
+        if (localStorage.getItem('mcc_radar_status') === 'ON') {
+            jalankanRadar();
+        }
+
         // LOGIKA PERPINDAHAN TAB
-        // ==========================================
         window.openTab = function(tabId, btnElement) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
