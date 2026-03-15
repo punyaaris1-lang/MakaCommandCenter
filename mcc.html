@@ -2,262 +2,282 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maka Command Center (MCC)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Maka Command Center (MCC) V2</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* TEMA DARK MODE / RUANG KONTROL SATELIT */
+        /* --- TEMA COMMAND CENTER V2 (MODERN SCI-FI) --- */
         :root {
-            --neon-green: #00ffcc;
-            --dark-bg: #0b0f19;
-            /* Warna bahaya/peringatan */
-            --alert-red: #ff003c; 
+            /* Palette Warna Baru */
+            --bg-main: #0a0e14;          /* Latar belakang paling gelap */
+            --bg-panel: #131a26;         /* Latar belakang panel/kartu */
+            --accent-cyan: #00f2ff;      /* Warna aksen utama (Cyan Electric) */
+            --accent-blue: #2962ff;      /* Warna aksen kedua (Biru) */
+            --text-primary: #e2e8f0;     /* Warna teks utama (Putih Gading) */
+            --text-secondary: #94a3b8;   /* Warna teks sekunder (Abu kebiruan) */
+            --alert-red: #ff3d00;        /* Warna peringatan */
+            
+            /* Efek Glow */
+            --cyan-glow: 0 0 15px rgba(0, 242, 255, 0.4);
         }
 
         body { 
-            background-color: var(--dark-bg); 
-            color: var(--neon-green); 
-            font-family: 'Courier New', Courier, monospace; 
+            background-color: var(--bg-main); 
+            color: var(--text-primary); 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; /* Font modern */
             margin: 0; 
             padding: 0;
+            line-height: 1.6;
         }
 
-        /* HEADER */
+        /* HEADER - Tampilan lebih solid */
         .header { 
-            background-color: #111827; 
-            padding: 15px; 
+            background: linear-gradient(to right, var(--bg-panel), #0f1520);
+            padding: 20px 15px; 
             text-align: center; 
-            border-bottom: 2px solid var(--neon-green); 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
-            box-shadow: 0 4px 10px rgba(0, 255, 204, 0.2);
+            border-bottom: 3px solid var(--accent-blue);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            position: relative;
         }
-        .header h2 { margin: 0; font-size: 24px; }
-        .header small { font-size: 12px; opacity: 0.8; }
+        .header::after { /* Garis aksen tipis di bawah */
+            content: ''; position: absolute; bottom: -3px; left: 0; width: 100%; height: 1px;
+            background: var(--accent-cyan); opacity: 0.5;
+        }
+        .header h2 { 
+            margin: 0; font-size: 22px; font-weight: 800; 
+            letter-spacing: 1px; 
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+        }
+        .header small { 
+            color: var(--text-secondary); 
+            font-size: 13px; font-weight: 600;
+        }
 
-        /* MULTI-TAB NAVIGATION */
+        /* MULTI-TAB NAVIGATION - Lebih berdimensi */
+        .nav-tabs-container {
+            background: var(--bg-main);
+            padding: 10px 5px 0 5px;
+            box-shadow: inset 0 -2px 0 var(--bg-panel);
+        }
         .nav-tabs { 
             display: flex; 
-            overflow-x: auto; /* Bisa digeser kiri-kanan di layar HP */
-            background: #1f2937; 
-            border-bottom: 1px solid var(--neon-green); 
-            scrollbar-width: none; /* Hide scrollbar Firefox */
+            overflow-x: auto; 
+            scrollbar-width: none; /* Firefox */
+            gap: 5px;
         }
-        .nav-tabs::-webkit-scrollbar { display: none; /* Hide scrollbar Chrome/Safari */ }
+        .nav-tabs::-webkit-scrollbar { display: none; }
         
         .nav-tabs button { 
-            flex: 1; 
-            background: none; 
-            border: none; 
-            color: var(--neon-green); 
-            padding: 15px; 
+            flex: none;
+            background: var(--bg-panel);
+            border: 1px solid #1e293b;
+            border-bottom: none;
+            color: var(--text-secondary); 
+            padding: 12px 20px; 
             cursor: pointer; 
-            transition: 0.3s; 
-            min-width: 120px;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            border-right: 1px solid rgba(0, 255, 204, 0.2);
+            transition: all 0.3s ease; 
+            border-radius: 8px 8px 0 0;
+            font-family: inherit; font-weight: 600; font-size: 13px;
+            white-space: nowrap;
         }
-        .nav-tabs button:hover, .nav-tabs button.active { 
-            background: var(--neon-green); 
-            color: var(--dark-bg); 
-            text-shadow: none;
+        /* Status Aktif Tab */
+        .nav-tabs button.active { 
+            background: linear-gradient(to top, var(--bg-panel), #1a2436);
+            color: var(--accent-cyan); 
+            border-color: var(--accent-cyan);
+            box-shadow: 0 -4px 15px rgba(0, 242, 255, 0.15);
+            position: relative;
+        }
+        /* Indikator garis bawah pada tab aktif */
+        .nav-tabs button.active::after {
+             content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--accent-cyan);
         }
 
-        /* TAB CONTENT */
+        /* KONTEN TAB */
+        .main-panel {
+            background: var(--bg-panel);
+            min-height: calc(100vh - 140px); /* Mengisi sisa layar */
+            padding-bottom: 30px;
+            border-top: 1px solid var(--accent-cyan);
+        }
         .tab-content { 
             display: none; 
             padding: 20px; 
-            animation: fadeIn 0.5s ease-in-out;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .tab-content h3 { 
+            color: var(--accent-cyan); margin-top: 0; font-weight: 800; 
+            border-left: 4px solid var(--accent-blue); padding-left: 10px;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* KONTROL PETA & RADAR */
+        /* KONTROL PETA & RADAR V2 */
         #map-container { 
             position: relative; 
             width: 100%; 
-            height: 60vh; 
-            border: 2px solid var(--neon-green); 
-            border-radius: 8px; 
+            height: 55vh; /* Tinggi peta disesuaikan */
+            border-radius: 12px; 
             overflow: hidden;
-            box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+            border: 2px solid #1e293b;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: border-color 0.5s;
         }
-        #map { width: 100%; height: 100%; z-index: 1; }
+        /* Saat radar aktif, bingkai peta menyala */
+        #map-container.radar-active-border {
+             border-color: var(--accent-cyan);
+             box-shadow: var(--cyan-glow);
+        }
+        #map { width: 100%; height: 100%; z-index: 1; background: #0a0e14; }
         
-        /* Animasi Sapuan Radar */
+        /* Animasi Sapuan Radar - Lebih halus */
         .radar-overlay {
-            position: absolute; 
-            top: 50%; left: 50%; 
-            width: 200%; height: 200%;
-            background: conic-gradient(from 0deg, rgba(0,255,204,0) 70%, rgba(0,255,204,0.4) 100%);
-            border-radius: 50%; 
-            transform: translate(-50%, -50%);
-            animation: scan 3s linear infinite; 
-            pointer-events: none; 
-            display: none; /* Disembunyikan secara default */
-            z-index: 1000;
+            position: absolute; top: 50%; left: 50%; width: 250%; height: 250%;
+            /* Gradasi biru ke cyan transparan */
+            background: conic-gradient(from 0deg, transparent 60%, rgba(41, 98, 255, 0.2) 85%, rgba(0, 242, 255, 0.5) 100%);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            animation: scan 4s linear infinite; pointer-events: none; display: none; z-index: 1000;
         }
         @keyframes scan { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
         
-        /* Tombol Radar */
-        .controls { margin-top: 15px; text-align: center; }
+        /* Tombol Kontrol */
+        .controls { margin-top: 25px; text-align: center; padding: 10px; background: #0f1520; border-radius: 12px;}
         .btn-radar { 
-            background: var(--dark-bg); 
-            color: var(--neon-green); 
-            border: 2px solid var(--neon-green); 
-            padding: 12px 25px; 
+            background: linear-gradient(135deg, #1e293b, #0f1520);
+            color: var(--accent-cyan); 
+            border: 1px solid var(--accent-cyan); 
+            padding: 14px 30px; 
             cursor: pointer; 
-            text-transform: uppercase; 
-            font-weight: bold; 
-            border-radius: 5px;
-            transition: 0.3s;
-            font-family: 'Courier New', Courier, monospace;
+            text-transform: uppercase; font-weight: 800; letter-spacing: 1px;
+            border-radius: 8px; transition: all 0.3s; width: 90%; max-width: 400px;
+            font-family: inherit;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
+        .btn-radar:hover { background: rgba(0, 242, 255, 0.1); box-shadow: var(--cyan-glow); }
         .btn-radar.on { 
-            background: var(--alert-red); 
-            border-color: var(--alert-red); 
-            color: white; 
-            box-shadow: 0 0 15px var(--alert-red);
+            background: linear-gradient(135deg, var(--alert-red), #c62828);
+            border: none; color: white; 
+            box-shadow: 0 0 20px rgba(255, 61, 0, 0.5);
+            animation: pulseRed 1.5s infinite;
         }
+        @keyframes pulseRed { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
+        
+        /* Placeholder Teks */
+        p.placeholder-text { color: var(--text-secondary); font-style: italic; opacity: 0.7; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h2>Maka Command Center</h2>
-        <small>Sistem Supervisi Satelit MLU & Kartika Chandra</small>
+        <small>SAT-NET SUPERVISION SYSTEM // V2.0</small>
     </div>
 
-    <div class="nav-tabs">
-        <button class="tab-link active" onclick="openTab('tab-peta')">SUPERVISI PETA</button>
-        <button class="tab-link" onclick="openTab('tab-anggota')">ANGGOTA</button>
-        <button class="tab-link" onclick="openTab('tab-keuangan')">KEUANGAN</button>
-        <button class="tab-link" onclick="openTab('tab-antrean')">ANTREAN</button>
-        <button class="tab-link" onclick="openTab('tab-broadcast')">BROADCAST</button>
-    </div>
-
-    <div id="tab-peta" class="tab-content active">
-        <h3 style="text-align: center; margin-top: 0;">Radar Pemantauan Lokasi (fc_locations)</h3>
-        <div id="map-container">
-            <div id="map"></div>
-            <div id="radar-sweep" class="radar-overlay"></div>
-        </div>
-        <div class="controls">
-            <button id="btnToggleRadar" class="btn-radar" onclick="toggleRadar()">POWER ON RADAR</button>
+    <div class="nav-tabs-container">
+        <div class="nav-tabs">
+            <button class="tab-link active" onclick="openTab('tab-peta')">🌐 PETA SATELIT</button>
+            <button class="tab-link" onclick="openTab('tab-anggota')">👥 ANGGOTA</button>
+            <button class="tab-link" onclick="openTab('tab-keuangan')">💰 KEUANGAN</button>
+            <button class="tab-link" onclick="openTab('tab-antrean')">⏳ ANTREAN</button>
+            <button class="tab-link" onclick="openTab('tab-broadcast')">📡 BROADCAST</button>
         </div>
     </div>
 
-    <div id="tab-anggota" class="tab-content">
-        <h3>DATABASE ANGGOTA</h3>
-        <p>Data member MLU & Kartika Chandra akan dirender di sini...</p>
-    </div>
+    <div class="main-panel">
+        <div id="tab-peta" class="tab-content active">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin:0; border:none; padding:0;">LIVE MONITORING</h3>
+                <small style="color: var(--accent-cyan);">Status: STANDBY</small>
+            </div>
+            
+            <div id="map-container">
+                <div id="map"></div>
+                <div id="radar-sweep" class="radar-overlay"></div>
+            </div>
+            <div class="controls">
+                <button id="btnToggleRadar" class="btn-radar" onclick="toggleRadar()">ACTIVATE RADAR SCAN</button>
+            </div>
+        </div>
 
-    <div id="tab-keuangan" class="tab-content">
-        <h3>SISTEM KEUANGAN</h3>
-        <p>Modul kas, iuran, dan histori pembayaran...</p>
-    </div>
-
-    <div id="tab-antrean" class="tab-content">
-        <h3>SISTEM ANTREAN</h3>
-        <p>Supervisi antrean charging & servis secara real-time...</p>
-    </div>
-
-    <div id="tab-broadcast" class="tab-content">
-        <h3>PUSAT BROADCAST</h3>
-        <p>Kirim instruksi massal ke seluruh perangkat terhubung...</p>
+        <div id="tab-anggota" class="tab-content">
+            <h3>DATABASE ANGGOTA TERPUSAT</h3>
+            <p class="placeholder-text">Menunggu koneksi data MLU & Kartika Chandra...</p>
+        </div>
+        <div id="tab-keuangan" class="tab-content">
+            <h3>INTEGRASI KEUANGAN</h3>
+            <p class="placeholder-text">Sistem kas dan histori transaksi akan tampil di sini.</p>
+        </div>
+        <div id="tab-antrean" class="tab-content">
+            <h3>SUPERVISI ANTREAN REAL-TIME</h3>
+            <p class="placeholder-text">Monitoring slot charging dan servis.</p>
+        </div>
+        <div id="tab-broadcast" class="tab-content">
+            <h3>TRANSMISI BROADCAST</h3>
+            <p class="placeholder-text">Panel kontrol pengiriman pesan massal.</p>
+        </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-        // --- KONFIGURASI FIREBASE MLU ---
-        const configMLU = {
-            apiKey: "AIzaSyAk3G...", // Ganti dengan API Key yang utuh nanti
-            projectId: "rtomaka-e67b5",
-            databaseURL: "https://rtomaka-e67b5-default-rtdb.firebaseio.com" // Sesuaikan URL database
-        };
-        const appMLU = initializeApp(configMLU, "MLUApp");
-        const dbMLU = getDatabase(appMLU);
-        console.log("[SYSTEM] Firebase rtomaka-e67b5 CONNECTED.");
-
-        // --- KONFIGURASI FIREBASE KARTIKA CHANDRA ---
-        const configKC = { projectId: "kartikachandrafc" };
-        // const appKC = initializeApp(configKC, "KCApp");
-        console.log("[SYSTEM] Firebase kartikachandrafc STANDBY.");
-
-        // --- KONFIGURASI FIREBASE GADING ---
-        const configGading = { projectId: "fcgadingnew22" };
-        // const appGading = initializeApp(configGading, "GadingApp");
-        console.log("[SYSTEM] Firebase fcgadingnew22 STANDBY.");
-
-        // Note: Logika penarikan data fc_locations akan ditambahkan ke sini selanjutnya
-    </script>
-
     <script>
         // --- LOGIKA MULTI-TAB ---
         function openTab(tabId) {
-            // Sembunyikan semua tab
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-link').forEach(btn => btn.classList.remove('active'));
-            
-            // Tampilkan tab yang diklik
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
-
-            // Penting: Refresh peta jika tab peta dibuka agar tidak blank/abu-abu
             if(tabId === 'tab-peta' && typeof map !== 'undefined') {
                 setTimeout(() => { map.invalidateSize(); }, 300);
             }
         }
 
-        // --- INISIALISASI PETA LEAFLET ---
-        // Set titik tengah awal (Koordinat Jakarta sebagai default awal)
-        const map = L.map('map').setView([-6.200000, 106.816666], 11);
-        
-        // Menggunakan basemap tema gelap (CartoDB Dark Matter) agar sesuai tema Control Room
+        // --- INISIALISASI PETA LEAFLET (DARK MATTER) ---
+        // Koordinat tengah diatur sedikit di zoom out agar terlihat area lebih luas
+        const map = L.map('map', {zoomControl: false}).setView([-6.200000, 106.816666], 10);
+        L.control.zoom({ position: 'bottomright' }).addTo(map); // Pindah zoom ke kanan bawah
+
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap &copy; CARTO',
-            maxZoom: 19
+            attribution: '&copy; OpenStreetMap, &copy; CARTO',
+            maxZoom: 19,
+            subdomains: 'abcd'
         }).addTo(map);
 
-        // --- LOGIKA RADAR ON/OFF ---
+        // --- LOGIKA RADAR ON/OFF V2 ---
         let radarActive = false;
         function toggleRadar() {
             const radarOverlay = document.getElementById('radar-sweep');
+            const mapContainer = document.getElementById('map-container');
             const btn = document.getElementById('btnToggleRadar');
             
-            radarActive = !radarActive; // Balikkan status
+            radarActive = !radarActive;
             
             if (radarActive) {
-                // RADAR ON
                 radarOverlay.style.display = 'block';
+                mapContainer.classList.add('radar-active-border'); // Tambah efek glow di bingkai peta
                 btn.classList.add('on');
-                btn.innerText = '⚠️ RADAR SCANNING...';
+                btn.innerHTML = '⚠️ RADAR SCANNING IN PROGRESS...';
                 
-                // Contoh interaksi saat radar nyala: Munculkan marker simulasi 
-                // (Nantinya marker ini ditarik dari Firebase fc_locations)
+                // Contoh Marker Simulasi (Nanti diganti data real)
                 if(!window.simMarker) {
-                    window.simMarker = L.circleMarker([-6.21462, 106.84513], {
-                        color: '#00ffcc', fillColor: '#00ffcc', fillOpacity: 0.5, radius: 8
-                    }).addTo(map).bindPopup("Titik Simulasi MLU");
+                    // Gunakan icon kustom biar lebih keren (bulatan cyan bersinar)
+                    const customIcon = L.divIcon({
+                        className: 'custom-marker',
+                        html: '<div style="width: 16px; height: 16px; background: var(--accent-cyan); border-radius: 50%; box-shadow: 0 0 15px var(--accent-cyan); border: 2px solid white;"></div>',
+                        iconSize: [20, 20], iconAnchor: [10, 10]
+                    });
+                    window.simMarker = L.marker([-6.21462, 106.84513], {icon: customIcon}).addTo(map)
+                        .bindPopup('<b style="color:black;">Target Terdeteksi</b><br>Unit MLU-01').openPopup();
                 }
             } else {
-                // RADAR OFF
                 radarOverlay.style.display = 'none';
+                mapContainer.classList.remove('radar-active-border');
                 btn.classList.remove('on');
-                btn.innerText = 'POWER ON RADAR';
-                
-                // Hapus marker simulasi saat dimatikan
-                if(window.simMarker) {
-                    map.removeLayer(window.simMarker);
-                    window.simMarker = null;
-                }
+                btn.innerHTML = 'ACTIVATE RADAR SCAN';
+                if(window.simMarker) { map.removeLayer(window.simMarker); window.simMarker = null; }
             }
         }
     </script>
