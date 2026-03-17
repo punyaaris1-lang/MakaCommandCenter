@@ -41,6 +41,7 @@
 
         /* Marker Stasiun FC */
         .marker-fc { width: 35px; height: 35px; border-radius: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); border: 2px solid white; box-shadow: 0 5px 15px rgba(245, 158, 11, 0.5); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; }
+        .marker-fc-kc { background: linear-gradient(135deg, #000, #333); border: 2px solid #D4FF00; color: #D4FF00; box-shadow: 0 5px 15px rgba(212,255,0,0.4); }
 
         /* S.O.S ALARM BOX */
         #sosAlertBox { display:none; position:absolute; top:80px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; background:linear-gradient(135deg, #ef4444, #991b1b); color:white; padding:20px; border-radius:20px; z-index:9999; box-shadow:0 10px 30px rgba(239,68,68,0.5); border:2px solid white; animation: slideDown 0.5s; }
@@ -111,14 +112,12 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, query, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // CONFIG FIREBASE MLU
-        const firebaseConfig = { 
-            apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", 
-            authDomain: "rtomaka-e67b5.firebaseapp.com", 
-            projectId: "rtomaka-e67b5" 
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        // 1. DUAL KONEKSI FIREBASE (MLU & KC)
+        const appMLU = initializeApp({ apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", authDomain: "rtomaka-e67b5.firebaseapp.com", projectId: "rtomaka-e67b5" }, "MLU_MAP");
+        const dbMLU = getFirestore(appMLU);
+
+        const appKC = initializeApp({ apiKey: "AIzaSyDfsTAGclYUSRe6YhiljS-xb-v-9RBYVEM", authDomain: "antriankcnew.firebaseapp.com", projectId: "antriankcnew" }, "KC_MAP");
+        const dbKC = getFirestore(appKC);
 
         // INIT MAP
         const map = L.map('map', { zoomControl: false }).setView([-6.200000, 106.816666], 12);
@@ -141,36 +140,39 @@
         }
 
         // ==========================================
-        // 1. LOAD STASIUN FC (PERMANEN MUNCUL)
+        // 1. LOAD STASIUN FC DARI MLU & KC (PERMANEN MUNCUL)
         // ==========================================
-        onSnapshot(collection(db, "fc_locations"), (snap) => {
-            fcMarkersGroup.clearLayers();
-            snap.forEach(doc => {
-                const d = doc.data();
-                const lat = d.latitude || d.lat;
-                const lng = d.longitude || d.lng;
+        function drawFC(d, docId, isKC = false) {
+            const lat = d.latitude || d.lat; const lng = d.longitude || d.lng;
+            if (lat && lng) {
+                const markerClass = isKC ? "marker-fc marker-fc-kc" : "marker-fc";
+                const fcIcon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: `<div class="${markerClass}"><i class="fa-solid fa-charging-station"></i></div>`,
+                    iconSize: [35, 35], iconAnchor: [17, 17]
+                });
                 
-                if (lat && lng) {
-                    const fcIcon = L.divIcon({
-                        className: 'custom-div-icon',
-                        html: `<div class="marker-fc"><i class="fa-solid fa-charging-station"></i></div>`,
-                        iconSize: [35, 35], iconAnchor: [17, 17]
-                    });
-                    
-                    const marker = L.marker([lat, lng], {icon: fcIcon}).addTo(fcMarkersGroup);
-                    marker.bindPopup(`
-                        <div style="text-align:center; padding:10px;">
-                            <h4 style="margin:0 0 5px; color:#b45309; font-family:'Outfit';">${d.nama || doc.id}</h4>
-                            <div style="font-size:10px; color:gray; font-weight:bold;">STASIUN FAST CHARGING</div>
-                        </div>
-                    `);
-                }
-            });
+                const marker = L.marker([lat, lng], {icon: fcIcon}).addTo(fcMarkersGroup);
+                marker.bindPopup(`
+                    <div style="text-align:center; padding:10px;">
+                        <h4 style="margin:0 0 5px; color:${isKC ? '#D4FF00' : '#b45309'}; font-family:'Outfit';">${d.nama || docId}</h4>
+                        <div style="font-size:10px; color:gray; font-weight:bold;">${isKC ? 'KARTIKA CHANDRA HQ' : 'STASIUN FAST CHARGING'}</div>
+                    </div>
+                `);
+            }
+        }
+
+        onSnapshot(collection(dbMLU, "fc_locations"), (snap) => {
+            snap.forEach(doc => drawFC(doc.data(), doc.id, false));
+        });
+        
+        onSnapshot(collection(dbKC, "fc_locations"), (snap) => {
+            snap.forEach(doc => drawFC(doc.data(), doc.id, true));
         });
 
 
         // ==========================================
-        // 2. FUNGSI RADAR UTAMA (LACAK PASUKAN)
+        // 2. FUNGSI RADAR UTAMA (LACAK PASUKAN MLU)
         // ==========================================
         window.toggleRadar = () => {
             const btn = document.getElementById('btnToggleRadar');
@@ -187,7 +189,7 @@
                 statusTxt.innerText = "RADAR AKTIF // MENARIK DATA";
                 statusTxt.style.color = "var(--danger)";
 
-                unsubscribe = onSnapshot(collection(db, "mlu_members"), (snap) => {
+                unsubscribe = onSnapshot(collection(dbMLU, "mlu_members"), (snap) => {
                     markersGroup.clearLayers();
                     currentMembers = [];
                     let memberCount = 0;
@@ -241,18 +243,17 @@
                 
                 if (unsubscribe) unsubscribe();
                 markersGroup.clearLayers();
-                // Catatan: Jangan kosongkan currentMembers agar sistem SOS tetap bisa bekerja dengan data terakhir
             }
         };
 
         if (localStorage.getItem('mcc_radar_on') === 'true') { window.toggleRadar(); }
 
         // ==========================================
-        // 3. SISTEM DETEKSI DARURAT (S.O.S) 
+        // 3. SISTEM DETEKSI DARURAT (S.O.S MLU) 
         // ==========================================
         window.activeSosId = null;
 
-        onSnapshot(query(collection(db, "mlu_sos"), where("status", "==", "ACTIVE")), (snap) => {
+        onSnapshot(query(collection(dbMLU, "mlu_sos"), where("status", "==", "ACTIVE")), (snap) => {
             const alertBox = document.getElementById('sosAlertBox');
             
             if(snap.empty) {
@@ -317,7 +318,7 @@
 
         window.selesaikanSos = async () => {
             if(window.activeSosId && confirm("Apakah S.O.S ini sudah tertangani? Alarm akan dimatikan.")) {
-                await updateDoc(doc(db, "mlu_sos", window.activeSosId), { status: 'RESOLVED' });
+                await updateDoc(doc(dbMLU, "mlu_sos", window.activeSosId), { status: 'RESOLVED' });
             }
         };
     </script>

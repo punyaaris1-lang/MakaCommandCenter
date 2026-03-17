@@ -15,9 +15,15 @@
         .search-box { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #e2e8f0; margin-bottom: 15px; font-size: 14px; box-sizing: border-box; outline: none; transition: 0.3s; }
         .search-box:focus { border-color: #2563eb; box-shadow: 0 0 15px rgba(37,99,235,0.1); }
         
+        .filter-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .btn-filter { flex: 1; padding: 10px; border: 1px solid #cbd5e1; background: white; border-radius: 8px; font-size: 11px; font-weight: 800; color: #64748b; cursor: pointer; transition: 0.2s; }
+        .btn-filter.active { background: #2563eb; color: white; border-color: #2563eb; }
+        .btn-filter.active-kc { background: #D4FF00; color: black; border-color: #D4FF00; }
+
         .grid-anggota { display: flex; flex-direction: column; gap: 12px; }
         .card-member { background: #fff; border-radius: 18px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }
         .card-pengurus { background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%); border-color: #fcd34d; }
+        .card-kc { border-left: 5px solid #D4FF00; }
         
         .m-photo { width: 55px; height: 55px; border-radius: 15px; object-fit: cover; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; flex-shrink: 0; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
         
@@ -27,21 +33,11 @@
         .badge { display: inline-block; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; margin-top: 4px; }
         .bg-member { background: #f1f5f9; color: #64748b; }
         .bg-pengurus { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
+        .bg-db-tag { background: #e2e8f0; color: #475569; font-size: 8px; border: 1px dashed #cbd5e1;}
 
         .action-group { display: flex; flex-direction: column; gap: 8px; }
         .btn-icon { width: 38px; height: 38px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .btn-edit { background: #eff6ff; color: #2563eb; }
         .btn-del { background: #fef2f2; color: #ef4444; }
-
-        .fab-add { position: fixed; bottom: 95px; right: 20px; width: 60px; height: 60px; background: #2563eb; color: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 25px rgba(37,99,235,0.4); border: 2px solid white; cursor: pointer; z-index: 1000; }
-
-        /* MODAL CSS */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
-        .modal-box { background: white; width: 100%; max-width: 400px; border-radius: 25px; padding: 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { font-size: 11px; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px; text-transform: uppercase; }
-        .form-input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-family: 'Inter'; font-weight: 600; box-sizing: border-box; outline: none; }
-        .btn-save { width: 100%; padding: 18px; border: none; border-radius: 15px; background: #2563eb; color: white; font-weight: 800; font-family: 'Outfit'; font-size: 16px; cursor: pointer; box-shadow: 0 10px 20px rgba(37,99,235,0.2); margin-top: 10px; }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e2e8f0; z-index: 999; }
         .nav-item { background: none; border: none; color: #94a3b8; font-size: 22px; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 20%; transition: 0.3s; }
@@ -53,41 +49,20 @@
 
     <div class="header">
         <h2>MCC SYSTEM</h2>
-        <small style="color:#64748b; font-weight:700;">COMMAND CENTER // DATA ANGGOTA</small>
+        <small style="color:#64748b; font-weight:700;">COMMAND CENTER // DATA ANGGOTA GABUNGAN</small>
     </div>
 
     <div class="main-panel">
         <input type="text" id="searchInput" class="search-box" placeholder="🔍 Cari nama atau pelat nomor..." onkeyup="filterList()">
-        <div id="memberList" class="grid-anggota">
-            <p style="text-align: center; color: #94a3b8; padding: 40px;"><i class="fa-solid fa-spinner fa-spin fa-2x"></i></p>
+        
+        <div class="filter-group">
+            <button class="btn-filter active" id="btnAll" onclick="setFilter('ALL')">SEMUA</button>
+            <button class="btn-filter" id="btnMLU" onclick="setFilter('MLU')">MLU</button>
+            <button class="btn-filter" id="btnKC" onclick="setFilter('KC')">KC</button>
         </div>
-    </div>
 
-    <button class="fab-add" onclick="openModal()"><i class="fa-solid fa-user-plus"></i></button>
-
-    <div class="modal-overlay" id="formModal">
-        <div class="modal-box">
-            <h3 id="modalTitleText" style="font-family:'Outfit'; margin-top:0;">Tambah Anggota</h3>
-            <input type="hidden" id="formId">
-            <div class="form-group"><label>Nama KTP</label><input type="text" id="formNamaKtp" class="form-input" style="text-transform:uppercase;"></div>
-            <div class="form-group"><label>Nama Panggilan</label><input type="text" id="formNamaWa" class="form-input" style="text-transform:uppercase;"></div>
-            <div class="form-group"><label>Pelat Nomor</label><input type="text" id="formPlat" class="form-input" style="text-transform:uppercase;"></div>
-            <div class="form-group"><label>Nomor WhatsApp</label><input type="number" id="formHp" class="form-input"></div>
-            <div class="form-group">
-                <label>Jabatan Organisasi</label>
-                <select id="formRole" class="form-input">
-                    <option value="KELUARGA MLU">Keluarga MLU (Member)</option>
-                    <option value="KORLAP">Korlap</option>
-                    <option value="HUMAS">Humas</option>
-                    <option value="SATGAS">Satgas</option>
-                    <option value="SEKRETARIS">Sekretaris</option>
-                    <option value="WAKIL KETUA">Wakil Ketua</option>
-                    <option value="KETUA UMUM">Ketua Umum</option>
-                    <option value="PEMBINA">Pembina</option>
-                </select>
-            </div>
-            <button class="btn-save" onclick="saveData()">SIMPAN KE FIREBASE</button>
-            <button onclick="closeModal()" style="width:100%; margin-top:15px; background:none; border:none; color:#94a3b8; font-weight:700; cursor:pointer;">BATALKAN</button>
+        <div id="memberList" class="grid-anggota">
+            <p style="text-align: center; color: #94a3b8; padding: 40px;"><i class="fa-solid fa-spinner fa-spin fa-2x"></i> Menggabungkan Database...</p>
         </div>
     </div>
 
@@ -101,109 +76,121 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", 
-            authDomain: "rtomaka-e67b5.firebaseapp.com", 
-            projectId: "rtomaka-e67b5",
-            storageBucket: "rtomaka-e67b5.firebasestorage.app", 
-            messagingSenderId: "472036722228", 
-            appId: "1:472036722228:web:11d520f9204db317d02c61"
-        };
-        const app = initializeApp(firebaseConfig); 
-        const db = getFirestore(app);
-        const refAnggota = collection(db, "mlu_members");
+        // DUAL KONEKSI FIREBASE
+        const appMLU = initializeApp({ apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", authDomain: "rtomaka-e67b5.firebaseapp.com", projectId: "rtomaka-e67b5" }, "MLU_DB");
+        const dbMLU = getFirestore(appMLU);
+        
+        const appKC = initializeApp({ apiKey: "AIzaSyDfsTAGclYUSRe6YhiljS-xb-v-9RBYVEM", authDomain: "antriankcnew.firebaseapp.com", projectId: "antriankcnew" }, "KC_DB");
+        const dbKC = getFirestore(appKC);
+
+        let dataMLU = [];
+        let dataKC = [];
         let allMembers = [];
+        let activeFilter = 'ALL';
 
-        onSnapshot(refAnggota, (snapshot) => {
-            allMembers = [];
-            snapshot.forEach((doc) => { allMembers.push({ id: doc.id, ...doc.data() }); });
+        // BACA DB MLU
+        onSnapshot(collection(dbMLU, "mlu_members"), (snapshot) => {
+            dataMLU = [];
+            snapshot.forEach((doc) => { dataMLU.push({ id: doc.id, dbSource: 'MLU', ...doc.data() }); });
+            combineAndRender();
+        });
+
+        // BACA DB KC
+        onSnapshot(collection(dbKC, "anggota"), (snapshot) => {
+            dataKC = [];
+            snapshot.forEach((doc) => { dataKC.push({ id: doc.id, dbSource: 'KC', ...doc.data() }); });
+            combineAndRender();
+        });
+
+        function combineAndRender() {
+            allMembers = [...dataMLU, ...dataKC];
             
             // LOGIKA AUTO-SORT: Pengurus di Atas, lalu urut Nama
             allMembers.sort((a, b) => {
-                const aIsP = (a.role && a.role !== 'KELUARGA MLU');
-                const bIsP = (b.role && b.role !== 'KELUARGA MLU');
+                const aRole = (a.role || "").toUpperCase();
+                const bRole = (b.role || "").toUpperCase();
+                const aIsP = (aRole !== 'KELUARGA MLU' && aRole !== 'MEMBER' && aRole !== '');
+                const bIsP = (bRole !== 'KELUARGA MLU' && bRole !== 'MEMBER' && bRole !== '');
+                
                 if (aIsP && !bIsP) return -1;
                 if (!aIsP && bIsP) return 1;
-                return (a.namaKtp || "").localeCompare(b.namaKtp || "");
+                return (a.namaKtp || a.nama || "").localeCompare(b.namaKtp || b.nama || "");
             });
             
-            renderList(allMembers);
-        }, (err) => { alert("Error database: " + err.message); });
+            filterList();
+        }
+
+        window.setFilter = (type) => {
+            activeFilter = type;
+            document.querySelectorAll('.btn-filter').forEach(b => b.className = 'btn-filter');
+            if(type === 'ALL') document.getElementById('btnAll').classList.add('active');
+            if(type === 'MLU') document.getElementById('btnMLU').classList.add('active');
+            if(type === 'KC') document.getElementById('btnKC').classList.add('active-kc');
+            filterList();
+        };
+
+        window.filterList = () => {
+            const k = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filteredData = allMembers.filter(m => {
+                const isMatchSearch = (m.namaKtp || m.nama || "").toLowerCase().includes(k) || (m.plat || "").toLowerCase().includes(k);
+                const isMatchFilter = (activeFilter === 'ALL') || (m.dbSource === activeFilter);
+                return isMatchSearch && isMatchFilter;
+            });
+
+            renderList(filteredData);
+        };
 
         function renderList(data) {
             const list = document.getElementById('memberList');
             list.innerHTML = '';
+            
+            if(data.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #94a3b8; padding: 20px;">Data tidak ditemukan.</p>';
+                return;
+            }
+
             data.forEach(m => {
-                const isP = (m.role && m.role !== 'KELUARGA MLU');
-                const name = m.namaKtp || m.namaWa || "Tanpa Nama";
+                const role = (m.role || "").toUpperCase();
+                const isP = (role !== 'KELUARGA MLU' && role !== 'MEMBER' && role !== '');
+                const name = m.namaKtp || m.namaWa || m.nama || "Tanpa Nama";
                 
-                // LOGIKA FOTO / INISIAL
                 let photoHtml = `<div class="m-photo">${name.charAt(0)}</div>`;
                 if(m.foto && m.foto.length > 100) {
                     photoHtml = `<img src="${m.foto}" class="m-photo">`;
                 }
 
+                const dbTag = m.dbSource === 'KC' ? `<span class="badge bg-db-tag" style="border-color:#D4FF00; color:#D4FF00; background:#000;">DB: KC</span>` : `<span class="badge bg-db-tag">DB: MLU</span>`;
+                const cardClass = m.dbSource === 'KC' ? 'card-kc' : '';
+
                 list.innerHTML += `
-                    <div class="card-member ${isP ? 'card-pengurus' : ''}">
+                    <div class="card-member ${isP ? 'card-pengurus' : ''} ${cardClass}">
                         ${photoHtml}
                         <div class="member-info">
                             <h4 class="member-name">${name}</h4>
                             <p class="member-plat">${m.plat || "-"}</p>
                             <span class="badge ${isP ? 'bg-pengurus' : 'bg-member'}">${m.role || 'MEMBER'}</span>
+                            ${dbTag}
                         </div>
                         <div class="action-group">
-                            <button class="btn-icon btn-edit" onclick="openEditModal('${m.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button class="btn-icon btn-del" onclick="hapusData('${m.id}', '${name}')"><i class="fa-solid fa-trash-can"></i></button>
+                            <button class="btn-icon btn-del" onclick="hapusData('${m.id}', '${name}', '${m.dbSource}')" title="Hapus dari Database"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </div>`;
             });
         }
 
-        window.filterList = () => {
-            const k = document.getElementById('searchInput').value.toLowerCase();
-            renderList(allMembers.filter(m => (m.namaKtp || "").toLowerCase().includes(k) || (m.plat || "").toLowerCase().includes(k)));
-        };
-
-        window.openModal = () => { 
-            document.getElementById('formId').value = ''; 
-            document.getElementById('formModal').style.display = 'flex';
-            document.getElementById('modalTitleText').innerText = "Tambah Anggota Baru";
-        };
-        window.closeModal = () => { document.getElementById('formModal').style.display = 'none'; };
-        
-        window.openEditModal = (id) => {
-            const m = allMembers.find(x => x.id === id);
-            document.getElementById('formId').value = id;
-            document.getElementById('formNamaKtp').value = m.namaKtp || '';
-            document.getElementById('formNamaWa').value = m.namaWa || '';
-            document.getElementById('formPlat').value = m.plat || '';
-            document.getElementById('formHp').value = m.hp || '';
-            document.getElementById('formRole').value = m.role || 'KELUARGA MLU';
-            document.getElementById('modalTitleText').innerText = "Edit Data Anggota";
-            document.getElementById('formModal').style.display = 'flex';
-        };
-
-        window.saveData = async () => {
-            const id = document.getElementById('formId').value;
-            const payload = {
-                namaKtp: document.getElementById('formNamaKtp').value.toUpperCase(),
-                namaWa: document.getElementById('formNamaWa').value.toUpperCase(),
-                plat: document.getElementById('formPlat').value.toUpperCase(),
-                hp: document.getElementById('formHp').value,
-                role: document.getElementById('formRole').value
-            };
-            if(!payload.namaKtp || !payload.plat) return alert("Nama & Plat wajib!");
-            try {
-                id ? await updateDoc(doc(db, "mlu_members", id), payload) : await addDoc(refAnggota, payload);
-                closeModal();
-            } catch (e) { alert(e.message); }
-        };
-
-        window.hapusData = async (id, nama) => {
-            if(confirm(`⚠️ HAPUS PERMANEN?\nAnggota: ${nama}\n\nData tidak bisa dikembalikan!`)) {
-                await deleteDoc(doc(db, "mlu_members", id));
+        window.hapusData = async (id, nama, dbSource) => {
+            if(confirm(`⚠️ HAPUS PERMANEN DARI DATABASE ${dbSource}?\nAnggota: ${nama}\n\nData tidak bisa dikembalikan!`)) {
+                try {
+                    const targetDB = dbSource === 'KC' ? dbKC : dbMLU;
+                    const collectionName = dbSource === 'KC' ? 'anggota' : 'mlu_members';
+                    await deleteDoc(doc(targetDB, collectionName, id));
+                    alert("Data berhasil dihapus.");
+                } catch(e) {
+                    alert("Error hapus data: " + e.message);
+                }
             }
         };
     </script>

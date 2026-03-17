@@ -9,119 +9,172 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --royal-blue: #0A2259; --electric-blue: #2563eb; --success: #10B981; --danger: #ef4444; --warning: #f59e0b; }
-        body { background: #f4f7f6; color: #1e293b; font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 100px; }
-        .header { background: #fff; padding: 20px 15px; text-align: center; box-shadow: 0 2px 15px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 990; border-bottom: 3px solid var(--electric-blue); }
-        .header h2 { margin: 0; font-family: 'Space Grotesk'; font-size: 22px; color: var(--electric-blue); text-transform: uppercase; }
+        :root { --royal-blue: #0A2259; --electric-blue: #2563eb; --success: #10B981; --danger: #ef4444; --warning: #f59e0b; --gold: #d4af37; --kc-yellow: #D4FF00; }
+        body { background: #f4f7f6; color: #1e293b; font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 100px; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; outline: none; }
         
+        .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 2px 15px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 990; border-bottom: 3px solid var(--electric-blue); }
+        .header h2 { margin: 0; font-family: 'Space Grotesk'; font-size: 20px; color: var(--electric-blue); text-transform: uppercase; }
+        
+        /* TOP TABS KEUANGAN */
+        .top-tabs { display: flex; background: #1e293b; padding: 5px; gap: 5px; overflow-x: auto; white-space: nowrap; }
+        .top-tabs::-webkit-scrollbar { display: none; }
+        .t-tab { flex: 1; min-width: 80px; padding: 10px 5px; border: none; background: transparent; color: #94a3b8; font-weight: 800; font-size: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'Space Grotesk'; }
+        .t-tab.active { background: var(--electric-blue); color: white; }
+        .t-tab.active-kc { background: var(--kc-yellow); color: black; }
+        .t-tab.active-gold { background: var(--gold); color: black; }
+
         .main-panel { padding: 15px; }
 
         /* DASHBOARD SALDO */
-        .f-card { border-radius: 20px; padding: 20px; color: white; margin-bottom: 15px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .f-card { border-radius: 16px; padding: 20px; color: white; margin-bottom: 15px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .card-kas { background: linear-gradient(135deg, var(--royal-blue) 0%, var(--electric-blue) 100%); }
-        .card-tabungan { background: linear-gradient(135deg, #064e3b 0%, var(--success) 100%); }
-        .f-label { font-size: 10px; font-weight: 800; letter-spacing: 1px; opacity: 0.8; text-transform: uppercase; }
-        .f-amount { font-family: 'Space Grotesk'; font-size: 30px; font-weight: 900; margin: 5px 0; }
+        .card-tab-mlu { background: linear-gradient(135deg, #064e3b 0%, var(--success) 100%); }
+        .card-tab-kc { background: linear-gradient(135deg, #000 0%, #111 100%); border: 1px solid #333; color: var(--kc-yellow); }
         
-        /* TABS KONTROL */
-        .tab-menu { display: flex; background: #fff; border-radius: 12px; padding: 5px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
-        .tab-btn { flex: 1; padding: 10px; border: none; background: none; font-weight: 800; font-size: 11px; color: #64748b; cursor: pointer; border-radius: 8px; transition: 0.3s; }
-        .tab-btn.active { background: var(--electric-blue); color: white; }
-
-        .content-section { display: none; }
-        .content-section.active { display: block; }
+        .f-label { font-size: 10px; font-weight: 800; letter-spacing: 1px; opacity: 0.8; text-transform: uppercase; }
+        .f-amount { font-family: 'Space Grotesk'; font-size: 28px; font-weight: 900; margin: 5px 0; }
+        
+        /* SECTIONS */
+        .fin-section { display: none; animation: fadeIn 0.3s; }
+        .fin-section.active { display: block; }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
 
         /* LIST ITEM */
-        .item-list { background: white; border-radius: 15px; padding: 15px; margin-bottom: 10px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-        .item-info h4 { margin: 0; font-size: 14px; color: #1e293b; }
-        .item-info p { margin: 3px 0 0 0; font-size: 11px; color: #64748b; }
-        .val-badge { font-family: 'Space Grotesk'; font-weight: 900; font-size: 14px; }
+        .item-list { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .card-tab-kc-list { background: #111; border-color: #333; color: white; }
+        .card-tab-kc-list h4 { color: var(--kc-yellow) !important; }
+
+        .item-info h4 { margin: 0; font-size: 13px; color: #1e293b; font-family: 'Outfit';}
+        .item-info p { margin: 3px 0 0 0; font-size: 10px; color: #64748b; font-weight: 600;}
+        .val-badge { font-family: 'Space Grotesk'; font-weight: 900; font-size: 13px; }
         
         /* TOMBOL AKSI */
-        .btn-action { padding: 8px 15px; border-radius: 8px; border: none; font-weight: 800; font-size: 11px; cursor: pointer; }
+        .btn-action { padding: 8px 12px; border-radius: 8px; border: none; font-weight: 800; font-size: 10px; cursor: pointer; transition: 0.2s;}
+        .btn-action:active { transform: scale(0.9); }
         .btn-approve { background: var(--success); color: white; }
         .btn-reject { background: #f1f5f9; color: var(--danger); margin-left: 5px; }
-        .fab-add { position: fixed; bottom: 95px; right: 20px; width: 60px; height: 60px; background: var(--electric-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 25px rgba(37,99,235,0.4); border: 2px solid white; z-index: 1000; }
+        .card-tab-kc-list .btn-reject { background: #222; }
+
+        .fab-add { position: fixed; bottom: 95px; right: 20px; width: 55px; height: 55px; background: var(--electric-blue); color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 10px 25px rgba(37,99,235,0.4); border: 2px solid white; z-index: 1000; cursor: pointer; }
+
+        /* AKSES MANAGER */
+        .access-card { background: white; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
+        .chk-group { display: flex; gap: 10px; margin-top: 10px; }
+        .chk-item { font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 5px; color: #475569; }
 
         /* MODAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
-        .modal-box { background: white; width: 100%; max-width: 400px; border-radius: 25px; padding: 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+        .modal-box { background: white; width: 100%; max-width: 400px; border-radius: 20px; padding: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
         .form-group { margin-bottom: 15px; }
-        .form-group label { font-size: 11px; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px; text-transform: uppercase; }
-        .form-input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-family: 'Inter'; font-weight: 600; box-sizing: border-box; outline: none; }
+        .form-group label { font-size: 10px; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px; text-transform: uppercase; }
+        .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc; font-family: 'Inter'; font-weight: 600; box-sizing: border-box; outline: none; }
         
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e2e8f0; z-index: 999; }
         .nav-item { background: none; border: none; color: #94a3b8; font-size: 22px; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 20%; }
         .nav-item span { font-size: 10px; margin-top: 5px; font-weight: 700; }
         .nav-item.active { color: var(--electric-blue); transform: translateY(-3px); }
+
+        /* LAYAR TERKUNCI */
+        #lockScreen { position: fixed; inset: 0; background: #0f172a; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; padding: 20px; }
+        #lockScreen i { font-size: 50px; color: var(--danger); margin-bottom: 20px; }
+        #lockScreen h2 { font-family: 'Space Grotesk'; margin: 0 0 10px; }
+        #lockScreen p { font-size: 12px; color: #94a3b8; }
     </style>
 </head>
 <body>
 
+    <div id="lockScreen">
+        <i class="fa-solid fa-shield-lock"></i>
+        <h2>AKSES DITOLAK</h2>
+        <p>Anda tidak memiliki otorisasi untuk mengakses Modul Keuangan MCC.<br>Hubungi Super Admin untuk meminta akses.</p>
+        <button onclick="window.location.href='dashboard_kc.html'" style="margin-top:20px; padding:10px 20px; border-radius:8px; border:none; font-weight:800; background:var(--electric-blue); color:white; cursor:pointer;">KEMBALI KE HOME</button>
+    </div>
+
     <div class="header">
         <h2>MCC FINANCE</h2>
-        <small style="color:#64748b; font-weight:700;">COMMAND CENTER // AUDIT & EKSEKUSI</small>
+        <small style="color:#64748b; font-weight:700;">COMMAND CENTER // AUDIT TERPISAH</small>
+    </div>
+
+    <div class="top-tabs">
+        <button class="t-tab" id="tabKasMlu" onclick="openSection('sec-kas-mlu', this, 'blue')" style="display:none;">KAS MLU</button>
+        <button class="t-tab" id="tabTabMlu" onclick="openSection('sec-tab-mlu', this, 'blue')" style="display:none;">TAB MLU</button>
+        <button class="t-tab" id="tabTabKc" onclick="openSection('sec-tab-kc', this, 'kc')" style="display:none;">TAB KC</button>
+        <button class="t-tab" id="tabAkses" onclick="openSection('sec-akses', this, 'gold')" style="display:none;"><i class="fa-solid fa-key"></i> OTORISASI</button>
     </div>
 
     <div class="main-panel">
-        <div class="f-card card-kas">
-            <div class="f-label">Kas Organisasi (MLU)</div>
-            <div class="f-amount" id="total-kas">Rp 0</div>
-        </div>
-
-        <div class="f-card card-tabungan">
-            <div class="f-label">Total Tabungan Anggota</div>
-            <div class="f-amount" id="total-tabungan">Rp 0</div>
-        </div>
-
-        <div class="tab-menu">
-            <button class="tab-btn active" onclick="switchSection('val-tabungan', this)">VALIDASI TABUNGAN</button>
-            <button class="tab-btn" onclick="switchSection('riwayat-kas', this)">RIWAYAT KAS</button>
-            <button class="tab-btn" onclick="switchSection('tarik-dana', this)">TARIK SALDO</button>
-        </div>
-
-        <div id="val-tabungan" class="content-section active">
-            <h4 style="margin: 0 0 15px 5px;">Antrean Verifikasi QRIS</h4>
-            <div id="list-verifikasi">
-                <p style="text-align: center; color: #94a3b8; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> Menunggu antrean...</p>
+        
+        <div id="sec-kas-mlu" class="fin-section">
+            <div class="f-card card-kas">
+                <div class="f-label">Total Kas Organisasi (MLU)</div>
+                <div class="f-amount" id="total-kas-mlu">Rp 0</div>
             </div>
+            <h4 style="font-size:12px; margin-bottom:10px;">Riwayat Kas Terakhir</h4>
+            <div id="list-kas-mlu"></div>
         </div>
 
-        <div id="riwayat-kas" class="content-section">
-            <h4 style="margin: 0 0 15px 5px;">Mutasi Kas Terakhir</h4>
-            <div id="list-kas"></div>
-        </div>
-
-        <div id="tarik-dana" class="content-section">
-            <div style="background:#fffbeb; border:1px solid #fcd34d; padding:15px; border-radius:12px; margin-bottom:15px; font-size:12px; color:#92400e;">
-                <b>MENU TARIK DANA:</b> Gunakan ini jika ada anggota yang ingin menarik saldo tabungannya secara tunai.
+        <div id="sec-tab-mlu" class="fin-section">
+            <div class="f-card card-tab-mlu">
+                <div class="f-label">Total Tabungan (MLU)</div>
+                <div class="f-amount" id="total-tab-mlu">Rp 0</div>
             </div>
-            <div id="list-tarik-anggota"></div>
+            <input type="text" id="searchTabMlu" class="form-input" placeholder="🔍 Cari nama..." style="margin-bottom:15px; padding:10px;" onkeyup="filterTabMlu()">
+            
+            <h4 style="font-size:12px; margin-bottom:10px; color:var(--success);">Antrean Verifikasi</h4>
+            <div id="verif-tab-mlu"></div>
+
+            <h4 style="font-size:12px; margin-bottom:10px; margin-top:20px;">Menu Tarik Dana</h4>
+            <div id="list-tarik-mlu"></div>
         </div>
+
+        <div id="sec-tab-kc" class="fin-section">
+            <div class="f-card card-tab-kc">
+                <div class="f-label" style="color:gray;">Total Tabungan (KC)</div>
+                <div class="f-amount" id="total-tab-kc">Rp 0</div>
+            </div>
+            <input type="text" id="searchTabKc" class="form-input" placeholder="🔍 Cari nama..." style="margin-bottom:15px; padding:10px; background:#111; color:white; border-color:#333;" onkeyup="filterTabKc()">
+            
+            <h4 style="font-size:12px; margin-bottom:10px; color:var(--kc-yellow);">Antrean Verifikasi</h4>
+            <div id="verif-tab-kc"></div>
+
+            <h4 style="font-size:12px; margin-bottom:10px; margin-top:20px; color:white;">Menu Tarik Dana</h4>
+            <div id="list-tarik-kc"></div>
+        </div>
+
+        <div id="sec-akses" class="fin-section">
+            <div style="background:#fffbeb; border:1px solid var(--gold); padding:12px; border-radius:10px; font-size:11px; color:#b45309; margin-bottom:15px;">
+                <b>GOD MODE:</b> Berikan hak akses kepada pengurus untuk mengelola modul keuangan tertentu.
+            </div>
+
+            <div class="access-card">
+                <div class="form-group"><label>Plat Nomor Pengurus</label><input type="text" id="accPlat" class="form-input" placeholder="B 1234 ABC"></div>
+                <div class="form-group"><label>Nama Pengurus</label><input type="text" id="accNama" class="form-input" placeholder="Nama Panggilan"></div>
+                <label style="font-size:10px; font-weight:800; color:#64748b;">HAK AKSES YANG DIBERIKAN:</label>
+                <div class="chk-group">
+                    <label class="chk-item"><input type="checkbox" id="chkKasMlu"> KAS MLU</label>
+                    <label class="chk-item"><input type="checkbox" id="chkTabMlu"> TAB MLU</label>
+                    <label class="chk-item"><input type="checkbox" id="chkTabKc"> TAB KC</label>
+                </div>
+                <button class="btn-action bg-gold" style="width:100%; margin-top:15px; padding:12px; background:var(--gold); color:black;" onclick="saveAccess()">SIMPAN OTORISASI</button>
+            </div>
+
+            <h4 style="font-size:12px; margin-bottom:10px;">Daftar Pengurus Terotorisasi</h4>
+            <div id="list-akses"></div>
+        </div>
+
     </div>
 
-    <button class="fab-add" onclick="openModalKas()"><i class="fa-solid fa-plus"></i></button>
+    <button class="fab-add" id="fabKas" onclick="openModalKas()"><i class="fa-solid fa-plus"></i></button>
 
     <div class="modal-overlay" id="modalKas">
         <div class="modal-box">
             <h3 style="font-family:'Space Grotesk'; margin-top:0;">Input Kas Organisasi</h3>
-            <div class="form-group">
-                <label>Jenis Transaksi</label>
-                <select id="kasType" class="form-input">
-                    <option value="IN">PEMASUKAN (+)</option>
-                    <option value="OUT">PENGELUARAN (-)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Nominal (Rp)</label>
-                <input type="number" id="kasAmount" class="form-input" placeholder="0">
-            </div>
-            <div class="form-group">
-                <label>Keterangan</label>
-                <input type="text" id="kasDesc" class="form-input" placeholder="Beli banner, iuran bulanan, dll">
-            </div>
-            <button class="btn-approve" style="width:100%; padding:18px; border-radius:15px;" onclick="saveKas()">SIMPAN TRANSAKSI</button>
-            <button onclick="closeModalKas()" style="width:100%; margin-top:15px; background:none; border:none; color:gray; font-weight:700;">BATAL</button>
+            <div class="form-group"><label>Jenis Transaksi</label><select id="kasType" class="form-input"><option value="IN">PEMASUKAN (+)</option><option value="OUT">PENGELUARAN (-)</option></select></div>
+            <div class="form-group"><label>Nominal (Rp)</label><input type="number" id="kasAmount" class="form-input" placeholder="0"></div>
+            <div class="form-group"><label>Keterangan</label><input type="text" id="kasDesc" class="form-input" placeholder="Beli banner, dll"></div>
+            <button class="btn-action btn-approve" style="width:100%; padding:15px; font-size:13px;" onclick="saveKas()">SIMPAN TRANSAKSI</button>
+            <button onclick="closeModalKas()" style="width:100%; margin-top:10px; background:none; border:none; color:gray; font-weight:800; padding:10px;">BATAL</button>
         </div>
     </div>
 
@@ -135,128 +188,288 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, addDoc, updateDoc, deleteDoc, query, where, orderBy, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, addDoc, deleteDoc, updateDoc, query, where, orderBy, runTransaction, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", authDomain: "rtomaka-e67b5.firebaseapp.com", projectId: "rtomaka-e67b5", storageBucket: "rtomaka-e67b5.firebasestorage.app", messagingSenderId: "472036722228", appId: "1:472036722228:web:11d520f9204db317d02c61" };
-        const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+        // DUAL KONEKSI FIREBASE
+        const appMLU = initializeApp({ apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", authDomain: "rtomaka-e67b5.firebaseapp.com", projectId: "rtomaka-e67b5" }, "MLU_FIN");
+        const dbMLU = getFirestore(appMLU);
 
-        // 1. MONITOR TOTAL KAS & TABUNGAN
-        onSnapshot(collection(db, "mlu_finance"), (snap) => {
-            let total = 0;
-            snap.forEach(d => { const data = d.data(); if(data.type === 'IN' || data.type === 'IN_COLLECTIVE') total += data.amount; else total -= data.amount; });
-            document.getElementById('total-kas').innerText = "Rp " + total.toLocaleString('id-ID');
-        });
+        const appKC = initializeApp({ apiKey: "AIzaSyDfsTAGclYUSRe6YhiljS-xb-v-9RBYVEM", authDomain: "antriankcnew.firebaseapp.com", projectId: "antriankcnew" }, "KC_FIN");
+        const dbKC = getFirestore(appKC);
 
-        onSnapshot(collection(db, "mlu_members"), (snap) => {
-            let total = 0; let membersHtml = '';
-            snap.forEach(d => { 
-                const data = d.data(); 
-                if(data.saldoTabungan) total += data.saldoTabungan;
-                // Render List Tarik Dana
-                membersHtml += `
-                    <div class="item-list">
-                        <div class="item-info">
-                            <h4>${data.namaKtp || data.namaWa}</h4>
-                            <p>${data.plat}</p>
-                            <p style="color:var(--success); font-weight:800;">Saldo: Rp ${(data.saldoTabungan||0).toLocaleString('id-ID')}</p>
-                        </div>
-                        <button class="btn-action btn-reject" onclick="prosesTarik('${d.id}', '${data.namaKtp}', ${data.saldoTabungan||0})">TARIK TUNAI</button>
-                    </div>`;
+        let uData = null; try { uData = JSON.parse(localStorage.getItem('maka_user')); } catch(e){}
+        const myPlat = (uData && uData.plat) ? uData.plat.replace(/\s+/g, '').toUpperCase() : "";
+        const myName = (uData && (uData.namaKtp || uData.namaWa)) ? (uData.namaKtp || uData.namaWa) : "ADMIN";
+        const isSuperAdmin = myPlat === "B4248SWF";
+
+        let accKasMLU = false, accTabMLU = false, accTabKC = false;
+
+        // ==========================================
+        // 1. SISTEM OTORISASI & INISIALISASI
+        // ==========================================
+        if (isSuperAdmin) {
+            accKasMLU = true; accTabMLU = true; accTabKC = true;
+            document.getElementById('tabAkses').style.display = 'inline-block';
+            unlockSystem();
+            initOtorisasi();
+        } else if (myPlat !== "") {
+            onSnapshot(doc(dbMLU, "mcc_access", myPlat), (snap) => {
+                if(snap.exists()) {
+                    const d = snap.data();
+                    accKasMLU = d.kas_mlu === true;
+                    accTabMLU = d.tab_mlu === true;
+                    accTabKC = d.tab_kc === true;
+                    
+                    if(accKasMLU || accTabMLU || accTabKC) unlockSystem();
+                    else document.getElementById('lockScreen').style.display = 'flex';
+                } else {
+                    document.getElementById('lockScreen').style.display = 'flex';
+                }
             });
-            document.getElementById('total-tabungan').innerText = "Rp " + total.toLocaleString('id-ID');
-            document.getElementById('list-tarik-anggota').innerHTML = membersHtml;
-        });
+        } else {
+            document.getElementById('lockScreen').style.display = 'flex';
+        }
 
-        // 2. MONITOR ANTREAN VERIFIKASI (PENDING)
-        const qVerif = query(collection(db, "mlu_tabungan_trx"), where("status", "==", "PENDING"));
-        onSnapshot(qVerif, (snap) => {
-            const cont = document.getElementById('list-verifikasi'); cont.innerHTML = snap.empty ? '<p style="text-align:center; color:gray; font-size:12px;">Tidak ada antrean masuk.</p>' : '';
-            snap.forEach(d => {
-                const data = d.data();
-                cont.innerHTML += `
-                    <div class="item-list">
-                        <div class="item-info">
-                            <h4>${data.memberName}</h4>
-                            <p>${new Date(data.timestamp).toLocaleString('id-ID')}</p>
-                            <div class="val-badge" style="color:var(--success);">+ Rp ${data.amount.toLocaleString('id-ID')}</div>
-                        </div>
-                        <div>
-                            <button class="btn-action btn-approve" onclick="approveTabungan('${d.id}', '${data.memberId}', ${data.amount})">CEKLIST</button>
-                            <button class="btn-action btn-reject" onclick="rejectTabungan('${d.id}')">X</button>
-                        </div>
-                    </div>`;
-            });
-        });
+        function unlockSystem() {
+            document.getElementById('lockScreen').style.display = 'none';
+            
+            let firstTabId = null; let firstBtn = null; let colorType = 'blue';
 
-        // 3. SEKSI RIWAYAT KAS
-        onSnapshot(query(collection(db, "mlu_finance"), orderBy("timestamp", "desc")), (snap) => {
-            const cont = document.getElementById('list-kas'); cont.innerHTML = '';
-            snap.forEach(d => {
-                const data = d.data(); const isIn = data.type === 'IN' || data.type === 'IN_COLLECTIVE';
-                cont.innerHTML += `
-                    <div class="item-list">
-                        <div class="item-info">
-                            <h4>${data.description}</h4>
-                            <p>${data.date || ''} • Oleh: ${data.actor || 'Admin'}</p>
-                        </div>
-                        <div class="val-badge" style="color:${isIn?'var(--success)':'var(--danger)'};">
-                            ${isIn?'+':'-'} Rp ${data.amount.toLocaleString('id-ID')}
-                        </div>
-                    </div>`;
-            });
-        });
+            if(accKasMLU) { 
+                const btn = document.getElementById('tabKasMlu'); btn.style.display = 'inline-block'; 
+                if(!firstTabId) { firstTabId = 'sec-kas-mlu'; firstBtn = btn; colorType = 'blue'; }
+                initKasMLU(); 
+            }
+            if(accTabMLU) { 
+                const btn = document.getElementById('tabTabMlu'); btn.style.display = 'inline-block'; 
+                if(!firstTabId) { firstTabId = 'sec-tab-mlu'; firstBtn = btn; colorType = 'blue'; }
+                initTabMLU(); 
+            }
+            if(accTabKC) { 
+                const btn = document.getElementById('tabTabKc'); btn.style.display = 'inline-block'; 
+                if(!firstTabId) { firstTabId = 'sec-tab-kc'; firstBtn = btn; colorType = 'kc'; }
+                initTabKC(); 
+            }
 
-        // FUNGSI EKSEKUSI DEWA
-        window.approveTabungan = async (trxId, memberId, amount) => {
-            if(!confirm("Dana sudah Bapak cek masuk ke Rekening/QRIS?")) return;
-            await runTransaction(db, async (t) => {
-                const mRef = doc(db, "mlu_members", memberId); const tRef = doc(db, "mlu_tabungan_trx", trxId);
-                const mDoc = await t.get(mRef);
-                const saldoBaru = (mDoc.data().saldoTabungan || 0) + amount;
-                t.update(mRef, { saldoTabungan: saldoBaru });
-                t.update(tRef, { status: 'SUCCESS' });
+            if(firstTabId) openSection(firstTabId, firstBtn, colorType);
+        }
+
+        // ==========================================
+        // 2. KAS MLU
+        // ==========================================
+        function initKasMLU() {
+            onSnapshot(collection(dbMLU, "mlu_finance"), (snap) => {
+                let total = 0; const cont = document.getElementById('list-kas-mlu'); cont.innerHTML = '';
+                let arr = []; snap.forEach(d => arr.push({id: d.id, ...d.data()}));
+                arr.sort((a,b) => b.timestamp - a.timestamp);
+                
+                arr.forEach(data => {
+                    const isIn = data.type === 'IN' || data.type === 'IN_COLLECTIVE';
+                    if(isIn) total += data.amount; else total -= data.amount;
+                    cont.innerHTML += `
+                        <div class="item-list">
+                            <div class="item-info"><h4>${data.description}</h4><p>${data.date} • Oleh: ${data.actor}</p></div>
+                            <div class="val-badge" style="color:${isIn?'var(--success)':'var(--danger)'};">${isIn?'+':'-'} Rp ${data.amount.toLocaleString('id-ID')}</div>
+                        </div>`;
+                });
+                document.getElementById('total-kas-mlu').innerText = "Rp " + total.toLocaleString('id-ID');
             });
-            alert("Berhasil! Saldo member bertambah.");
+        }
+
+        // ==========================================
+        // 3. TABUNGAN MLU
+        // ==========================================
+        let dataTabMluGlobal = [];
+        function initTabMLU() {
+            onSnapshot(collection(dbMLU, "mlu_members"), (snap) => {
+                let total = 0; dataTabMluGlobal = [];
+                snap.forEach(d => { 
+                    const data = d.data(); 
+                    if(data.saldoTabungan) { total += data.saldoTabungan; dataTabMluGlobal.push({id: d.id, ...data}); }
+                });
+                document.getElementById('total-tab-mlu').innerText = "Rp " + total.toLocaleString('id-ID');
+                renderTarikMlu(dataTabMluGlobal);
+            });
+
+            onSnapshot(query(collection(dbMLU, "mlu_tabungan_trx"), where("status", "==", "PENDING")), (snap) => {
+                const cont = document.getElementById('verif-tab-mlu'); cont.innerHTML = snap.empty ? '<p style="color:gray; font-size:11px; text-align:center;">Tidak ada antrean.</p>' : '';
+                let arr = []; snap.forEach(d => arr.push({id: d.id, ...d.data()})); arr.sort((a,b) => a.timestamp - b.timestamp);
+                arr.forEach(data => {
+                    cont.innerHTML += `
+                        <div class="item-list">
+                            <div class="item-info"><h4>${data.memberName}</h4><p>${new Date(data.timestamp).toLocaleString('id-ID')}</p><div class="val-badge" style="color:var(--success);">+ Rp ${data.amount.toLocaleString('id-ID')}</div></div>
+                            <div><button class="btn-action btn-approve" onclick="approveTabungan('${data.id}', '${data.memberId}', ${data.amount}, 'MLU')">CEKLIST</button><button class="btn-action btn-reject" onclick="rejectTabungan('${data.id}', 'MLU')">X</button></div>
+                        </div>`;
+                });
+            });
+        }
+
+        function renderTarikMlu(data) {
+            let html = ''; data.sort((a,b) => (a.namaKtp||"").localeCompare(b.namaKtp||""));
+            data.forEach(m => {
+                html += `<div class="item-list"><div class="item-info"><h4>${m.namaKtp || m.namaWa}</h4><p>${m.plat}</p><p style="color:var(--success); font-weight:800;">Saldo: Rp ${m.saldoTabungan.toLocaleString('id-ID')}</p></div><button class="btn-action btn-reject" style="background:#fef2f2; color:var(--danger); border:1px solid #fecaca;" onclick="prosesTarik('${m.id}', '${m.namaKtp || m.namaWa}', ${m.saldoTabungan}, 'MLU')">TARIK TUNAI</button></div>`;
+            });
+            document.getElementById('list-tarik-mlu').innerHTML = html;
+        }
+        window.filterTabMlu = () => { const k = document.getElementById('searchTabMlu').value.toLowerCase(); renderTarikMlu(dataTabMluGlobal.filter(m => (m.namaKtp||"").toLowerCase().includes(k) || (m.namaWa||"").toLowerCase().includes(k))); };
+
+        // ==========================================
+        // 4. TABUNGAN KC
+        // ==========================================
+        let dataTabKcGlobal = [];
+        function initTabKC() {
+            onSnapshot(collection(dbKC, "anggota"), (snap) => {
+                let total = 0; dataTabKcGlobal = [];
+                snap.forEach(d => { 
+                    const data = d.data(); 
+                    if(data.tabungan) { total += data.tabungan; dataTabKcGlobal.push({id: d.id, ...data}); }
+                });
+                document.getElementById('total-tab-kc').innerText = "Rp " + total.toLocaleString('id-ID');
+                renderTarikKc(dataTabKcGlobal);
+            });
+
+            onSnapshot(query(collection(dbKC, "tabungan_trx"), where("status", "==", "PENDING")), (snap) => {
+                const cont = document.getElementById('verif-tab-kc'); cont.innerHTML = snap.empty ? '<p style="color:gray; font-size:11px; text-align:center;">Tidak ada antrean.</p>' : '';
+                let arr = []; snap.forEach(d => arr.push({id: d.id, ...d.data()})); arr.sort((a,b) => a.timestamp - b.timestamp);
+                arr.forEach(data => {
+                    cont.innerHTML += `
+                        <div class="item-list card-tab-kc-list">
+                            <div class="item-info"><h4>${data.memberName}</h4><p>${new Date(data.timestamp).toLocaleString('id-ID')}</p><div class="val-badge" style="color:var(--success);">+ Rp ${data.amount.toLocaleString('id-ID')}</div></div>
+                            <div><button class="btn-action btn-approve" onclick="approveTabungan('${data.id}', '${data.memberId}', ${data.amount}, 'KC')">CEKLIST</button><button class="btn-action btn-reject" onclick="rejectTabungan('${data.id}', 'KC')">X</button></div>
+                        </div>`;
+                });
+            });
+        }
+
+        function renderTarikKc(data) {
+            let html = ''; data.sort((a,b) => (a.namaKtp||a.nama||"").localeCompare(b.namaKtp||b.nama||""));
+            data.forEach(m => {
+                html += `<div class="item-list card-tab-kc-list"><div class="item-info"><h4>${m.namaKtp || m.nama}</h4><p>${m.plat}</p><p style="color:var(--kc-yellow); font-weight:800;">Saldo: Rp ${m.tabungan.toLocaleString('id-ID')}</p></div><button class="btn-action btn-reject" style="background:#222; color:var(--danger); border:1px solid #444;" onclick="prosesTarik('${m.id}', '${m.namaKtp || m.nama}', ${m.tabungan}, 'KC')">TARIK TUNAI</button></div>`;
+            });
+            document.getElementById('list-tarik-kc').innerHTML = html;
+        }
+        window.filterTabKc = () => { const k = document.getElementById('searchTabKc').value.toLowerCase(); renderTarikKc(dataTabKcGlobal.filter(m => (m.namaKtp||m.nama||"").toLowerCase().includes(k))); };
+
+
+        // ==========================================
+        // FUNGSI EKSEKUSI
+        // ==========================================
+        window.approveTabungan = async (trxId, memberId, amount, dbSource) => {
+            if(!confirm(`Dana sudah masuk ke Rekening/QRIS?\nTarget: ${dbSource}`)) return;
+            const targetDB = dbSource === 'KC' ? dbKC : dbMLU;
+            const colMem = dbSource === 'KC' ? 'anggota' : 'mlu_members';
+            const colTrx = dbSource === 'KC' ? 'tabungan_trx' : 'mlu_tabungan_trx';
+            const fld = dbSource === 'KC' ? 'tabungan' : 'saldoTabungan';
+
+            try {
+                await runTransaction(targetDB, async (t) => {
+                    const mRef = doc(targetDB, colMem, memberId); const tRef = doc(targetDB, colTrx, trxId);
+                    const mDoc = await t.get(mRef);
+                    t.update(mRef, { [fld]: (mDoc.data()[fld] || 0) + amount });
+                    t.update(tRef, { status: 'SUCCESS' });
+                });
+                alert("Berhasil!");
+            } catch(e) { alert("Gagal: " + e.message); }
         };
 
-        window.prosesTarik = async (memberId, nama, saldoSkrg) => {
-            const jml = prompt(`Tarik Saldo: ${nama}\nSaldo Saat Ini: Rp ${saldoSkrg.toLocaleString()}\n\nMasukkan Jumlah Tarik (Angka Saja):`);
-            if(!jml || isNaN(jml) || jml > saldoSkrg) return alert("Jumlah tidak valid atau saldo kurang!");
+        window.rejectTabungan = async (id, dbSource) => { 
+            if(confirm("Tolak pengajuan ini?")) {
+                const targetDB = dbSource === 'KC' ? dbKC : dbMLU;
+                const colTrx = dbSource === 'KC' ? 'tabungan_trx' : 'mlu_tabungan_trx';
+                await deleteDoc(doc(targetDB, colTrx, id)); 
+            }
+        };
+
+        window.prosesTarik = async (memberId, nama, saldoSkrg, dbSource) => {
+            const jml = prompt(`TARIK SALDO (${dbSource})\nMember: ${nama}\nSaldo: Rp ${saldoSkrg.toLocaleString()}\n\nJumlah Tarik (Angka):`);
+            if(!jml || isNaN(jml) || jml > saldoSkrg) return alert("Jumlah tidak valid / Saldo kurang!");
             if(confirm(`Tarik Rp ${parseInt(jml).toLocaleString()} dari ${nama}?`)) {
-                await runTransaction(db, async (t) => {
-                    const mRef = doc(db, "mlu_members", memberId);
-                    const mDoc = await t.get(mRef);
-                    t.update(mRef, { saldoTabungan: mDoc.data().saldoTabungan - parseInt(jml) });
-                    await addDoc(collection(db, "mlu_tabungan_trx"), {
-                        memberId, memberName: nama, type: 'OUT', amount: parseInt(jml),
-                        desc: 'Tarik Tunai via Admin MCC', timestamp: Date.now(), status: 'SUCCESS'
+                const targetDB = dbSource === 'KC' ? dbKC : dbMLU;
+                const colMem = dbSource === 'KC' ? 'anggota' : 'mlu_members';
+                const colTrx = dbSource === 'KC' ? 'tabungan_trx' : 'mlu_tabungan_trx';
+                const fld = dbSource === 'KC' ? 'tabungan' : 'saldoTabungan';
+
+                try {
+                    await runTransaction(targetDB, async (t) => {
+                        const mRef = doc(targetDB, colMem, memberId); const mDoc = await t.get(mRef);
+                        t.update(mRef, { [fld]: mDoc.data()[fld] - parseInt(jml) });
+                        await addDoc(collection(targetDB, colTrx), { memberId, memberName: nama, type: 'OUT', amount: parseInt(jml), desc: `Tarik via Admin ${myName}`, timestamp: Date.now(), status: 'SUCCESS' });
                     });
-                });
-                alert("Berhasil ditarik!");
+                    alert("Dana berhasil ditarik!");
+                } catch(e) { alert("Gagal: " + e.message); }
             }
         };
 
         window.saveKas = async () => {
-            const type = document.getElementById('kasType').value;
-            const amt = parseInt(document.getElementById('kasAmount').value);
-            const desc = document.getElementById('kasDesc').value;
-            if(!amt || !desc) return alert("Isi data lengkap!");
-            await addDoc(collection(db, "mlu_finance"), {
-                type, amount: amt, description: desc, timestamp: Date.now(),
-                date: new Date().toLocaleDateString('id-ID'), actor: "ADMIN MCC"
-            });
+            const type = document.getElementById('kasType').value; const amt = parseInt(document.getElementById('kasAmount').value); const desc = document.getElementById('kasDesc').value;
+            if(!amt || !desc) return alert("Lengkapi form!");
+            await addDoc(collection(dbMLU, "mlu_finance"), { type, amount: amt, description: desc, timestamp: Date.now(), date: new Date().toLocaleDateString('id-ID'), actor: myName });
             closeModalKas();
         };
 
-        // UTILITIES
-        window.switchSection = (id, btn) => {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active'); btn.classList.add('active');
+
+        // ==========================================
+        // SISTEM OTORISASI (SUPER ADMIN ONLY)
+        // ==========================================
+        function initOtorisasi() {
+            onSnapshot(collection(dbMLU, "mcc_access"), (snap) => {
+                const cont = document.getElementById('list-akses'); cont.innerHTML = '';
+                snap.forEach(d => {
+                    const data = d.data();
+                    let badges = "";
+                    if(data.kas_mlu) badges += `<span class="val-badge" style="font-size:9px; background:var(--electric-blue); color:white; padding:2px 5px; border-radius:4px; margin-right:4px;">KAS MLU</span>`;
+                    if(data.tab_mlu) badges += `<span class="val-badge" style="font-size:9px; background:var(--success); color:white; padding:2px 5px; border-radius:4px; margin-right:4px;">TAB MLU</span>`;
+                    if(data.tab_kc) badges += `<span class="val-badge" style="font-size:9px; background:#000; color:var(--kc-yellow); border:1px solid #333; padding:2px 5px; border-radius:4px;">TAB KC</span>`;
+
+                    cont.innerHTML += `
+                        <div class="item-list">
+                            <div class="item-info"><h4>${data.nama}</h4><p>${d.id}</p><div style="margin-top:5px;">${badges}</div></div>
+                            <button class="btn-action bg-red" style="background:#fef2f2; color:var(--danger); border:1px solid #fecaca;" onclick="cabutAkses('${d.id}', '${data.nama}')">CABUT</button>
+                        </div>`;
+                });
+            });
+        }
+
+        window.saveAccess = async () => {
+            const plat = document.getElementById('accPlat').value.replace(/\s+/g, '').toUpperCase();
+            const nama = document.getElementById('accNama').value.toUpperCase();
+            const chkKasMlu = document.getElementById('chkKasMlu').checked;
+            const chkTabMlu = document.getElementById('chkTabMlu').checked;
+            const chkTabKc = document.getElementById('chkTabKc').checked;
+
+            if(!plat || !nama) return alert("Plat dan Nama Wajib Diisi!");
+            if(!chkKasMlu && !chkTabMlu && !chkTabKc) return alert("Pilih minimal 1 hak akses!");
+
+            try {
+                await setDoc(doc(dbMLU, "mcc_access", plat), { nama: nama, kas_mlu: chkKasMlu, tab_mlu: chkTabMlu, tab_kc: chkTabKc });
+                alert("Otorisasi Berhasil Disimpan!");
+                document.getElementById('accPlat').value = ''; document.getElementById('accNama').value = '';
+                document.getElementById('chkKasMlu').checked = false; document.getElementById('chkTabMlu').checked = false; document.getElementById('chkTabKc').checked = false;
+            } catch(e) { alert("Gagal menyimpan otorisasi: " + e.message); }
         };
+
+        window.cabutAkses = async (plat, nama) => {
+            if(confirm(`Cabut seluruh hak akses keuangan untuk ${nama} (${plat})?`)) {
+                await deleteDoc(doc(dbMLU, "mcc_access", plat));
+            }
+        };
+
+        // UTILITIES UI
+        window.openSection = (secId, btnElement, colorType) => {
+            document.querySelectorAll('.fin-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.t-tab').forEach(b => b.className = 't-tab');
+            document.getElementById(secId).classList.add('active');
+            
+            if(colorType === 'blue') btnElement.classList.add('active');
+            else if(colorType === 'kc') btnElement.classList.add('active-kc');
+            else if(colorType === 'gold') btnElement.classList.add('active-gold');
+
+            if(secId === 'sec-kas-mlu') document.getElementById('fabKas').style.display = 'flex';
+            else document.getElementById('fabKas').style.display = 'none';
+        };
+
         window.openModalKas = () => document.getElementById('modalKas').style.display = 'flex';
         window.closeModalKas = () => document.getElementById('modalKas').style.display = 'none';
-        window.rejectTabungan = async (id) => { if(confirm("Tolak pengajuan ini?")) await deleteDoc(doc(db, "mlu_tabungan_trx", id)); };
     </script>
 </body>
 </html>
