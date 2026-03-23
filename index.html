@@ -3,252 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MCC - GOD MODE DASHBOARD</title>
+    <title>MCC - Super Clone App</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@700;800;900&family=Outfit:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* TEMA DEFAULT (MLU - BIRU EMAS) */
+        /* BASE THEME (MLU) */
         :root { 
-            --bg-main: #F0F4F8;
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --text-primary: #0F172A;
-            --text-muted: #64748B;
-            --header-grad: linear-gradient(160deg, #0A2259 0%, #15398F 100%);
-            --accent-color: #D4AF37; /* Emas */
-            --border-glow: rgba(212, 175, 55, 0.4);
-            --danger: #EF4444; 
-            --success: #10B981;
+            --royal-blue: #0A2259; --electric-blue: #2D63ED; --gold-lux: #D4AF37;
+            --bg-surface: #F0F4F8; --text-main: #0F172A; --text-muted: #64748B; 
+            --glass-bg: rgba(255, 255, 255, 0.85); --glass-border: rgba(255, 255, 255, 0.9);
+            --shadow-soft: 0 10px 40px rgba(10, 34, 89, 0.08);
+            --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
         }
 
-        /* TEMA SAKLAR KANAN (KC - HIJAU KUNING STABILO) */
-        body.theme-kc {
-            --bg-main: #022C22; /* Hijau Gelap */
-            --card-bg: rgba(6, 78, 59, 0.85);
-            --text-primary: #ECFDF5;
-            --text-muted: #A7F3D0;
-            --header-grad: linear-gradient(160deg, #064E3B 0%, #047857 100%);
-            --accent-color: #D4FF00; /* Kuning Stabilo */
-            --border-glow: rgba(212, 255, 0, 0.4);
+        /* KC THEME (Kuning Stabilo / Hijau) */
+        html.theme-kc {
+            --royal-blue: #064E3B; /* Hijau Gelap */
+            --electric-blue: #059669; /* Hijau Terang */
+            --gold-lux: #D4FF00; /* Kuning Stabilo */
+            --bg-surface: #F0FDF4; 
+            --text-main: #064E3B; 
+            --glass-bg: rgba(255, 255, 255, 0.95); --glass-border: rgba(6, 78, 59, 0.15); 
+            --shadow-soft: 0 15px 35px rgba(6, 78, 59, 0.08);
         }
 
-        body { margin: 0; background: var(--bg-main); font-family: 'Inter', sans-serif; color: var(--text-primary); transition: background 0.4s ease, color 0.4s ease; overflow-x: hidden; padding-bottom: 100px; -webkit-tap-highlight-color: transparent;}
-        * { box-sizing: border-box; outline: none; transition: border-color 0.4s, box-shadow 0.4s, background-color 0.4s; }
+        body { margin: 0; background: var(--bg-surface); font-family: 'Inter', sans-serif; color: var(--text-main); padding-bottom: 120px; overflow-x: hidden; -webkit-tap-highlight-color: transparent; transition: background 0.4s;}
+        * { box-sizing: border-box; outline: none; text-decoration: none; transition: background 0.4s, color 0.4s, border-color 0.4s;}
 
         /* SECURITY LOCK SCREEN */
         #authScreen { position: fixed; inset: 0; background: #050A15; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; transition: opacity 0.5s; }
         .auth-icon { font-size: 60px; color: var(--danger); margin-bottom: 20px; text-shadow: 0 0 20px rgba(239,68,68,0.5); }
-        .auth-title { font-family: 'Orbitron'; color: #fff; margin: 0 0 5px; font-size: 24px; letter-spacing: 2px;}
-        .auth-input { padding: 15px; width: 100%; max-width: 300px; text-align: center; font-family: 'Space Grotesk'; font-size: 24px; letter-spacing: 8px; border-radius: 12px; border: 2px solid var(--danger); background: #000; color: #fff; margin: 25px 0 15px; }
+        .auth-title { font-family: 'Space Grotesk'; color: #fff; margin: 0 0 5px; font-size: 24px; font-weight: 900; letter-spacing: 2px;}
+        .auth-input { padding: 15px; width: 100%; max-width: 300px; text-align: center; font-family: 'Space Grotesk'; font-size: 24px; letter-spacing: 8px; border-radius: 12px; border: 2px solid var(--danger); background: #000; color: #fff; margin: 25px 0 15px; outline: none;}
         .auth-btn { padding: 15px 30px; background: var(--danger); color: #fff; border: none; border-radius: 12px; font-weight: 900; font-family: 'Space Grotesk'; cursor: pointer; width: 100%; max-width: 300px; font-size: 16px; box-shadow: 0 10px 20px rgba(239,68,68,0.3);}
 
-        /* HEADER & SAKLAR DIMENSI */
-        .header-dewa { background: var(--header-grad); padding: 40px 20px 20px; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; box-shadow: 0 10px 30px var(--border-glow); position: relative; z-index: 10; margin-bottom: 25px; }
-        
-        .dimensi-switch { background: rgba(0,0,0,0.3); border-radius: 50px; padding: 5px; display: flex; position: relative; width: 220px; margin: 0 auto 20px; border: 1px solid rgba(255,255,255,0.2); }
-        .ds-btn { flex: 1; text-align: center; padding: 10px 0; font-family: 'Space Grotesk'; font-weight: 900; font-size: 12px; color: white; cursor: pointer; z-index: 2; position: relative; transition: 0.3s; }
-        .ds-slider { position: absolute; top: 5px; left: 5px; width: calc(50% - 5px); height: calc(100% - 10px); background: var(--accent-color); border-radius: 50px; transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1; box-shadow: 0 5px 15px var(--border-glow); }
-        body.theme-kc .ds-slider { left: calc(50%); }
-        body.theme-kc .ds-btn:nth-child(1) { color: rgba(255,255,255,0.5); }
-        body:not(.theme-kc) .ds-btn:nth-child(2) { color: rgba(255,255,255,0.5); }
-        
-        /* Teks Slider berubah warna biar kontras */
-        body.theme-kc .ds-slider::after { content: 'KC'; position: absolute; inset:0; display:flex; align-items:center; justify-content:center; color: #064E3B; font-family:'Space Grotesk'; font-weight:900; font-size:12px; }
-        body:not(.theme-kc) .ds-slider::after { content: 'MLU'; position: absolute; inset:0; display:flex; align-items:center; justify-content:center; color: #0A2259; font-family:'Space Grotesk'; font-weight:900; font-size:12px; }
+        /* SAKLAR DIMENSI (HEADER DEWA) */
+        .dimensi-switch-container { padding: 15px 20px 0; display: flex; justify-content: center; position: relative; z-index: 50; }
+        .dimensi-switch { background: rgba(0,0,0,0.05); border-radius: 50px; padding: 4px; display: flex; position: relative; width: 200px; border: 1px solid rgba(0,0,0,0.1); }
+        .ds-btn { flex: 1; text-align: center; padding: 8px 0; font-family: 'Space Grotesk'; font-weight: 900; font-size: 11px; color: var(--text-muted); cursor: pointer; z-index: 2; position: relative; }
+        .ds-slider { position: absolute; top: 4px; left: 4px; width: calc(50% - 4px); height: calc(100% - 8px); background: var(--royal-blue); border-radius: 50px; transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        html.theme-kc .ds-slider { left: calc(50%); background: var(--electric-blue); }
+        html.theme-kc .ds-slider::after { content: 'KARTIKA CHANDRA'; position: absolute; inset:0; display:flex; align-items:center; justify-content:center; color: #fff; font-family:'Space Grotesk'; font-weight:900; font-size:10px; }
+        html:not(.theme-kc) .ds-slider::after { content: 'MLU MASTER'; position: absolute; inset:0; display:flex; align-items:center; justify-content:center; color: #fff; font-family:'Space Grotesk'; font-weight:900; font-size:10px; }
 
-        .dewa-title { font-family: 'Orbitron'; font-size: 20px; color: white; text-align: center; margin: 0; letter-spacing: 1px; }
-        .dewa-subtitle { font-family: 'Inter'; font-size: 10px; color: var(--accent-color); text-align: center; font-weight: 800; letter-spacing: 3px; margin-top: 5px; }
+        /* DASHBOARD ASLI CLONE */
+        .glass-panel { background: var(--glass-bg); backdrop-filter: blur(30px); border: 1.5px solid var(--glass-border); box-shadow: var(--shadow-soft); position: relative; overflow: hidden; border-radius: 28px;}
+        .dashboard-header { padding: 25px 20px 15px; position: relative; z-index: 10; }
+        .top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
+        .greeting { font-family: 'Outfit'; font-size: 32px; font-weight: 900; color: var(--royal-blue); line-height: 1; letter-spacing: -1px; margin-bottom: 8px; cursor: pointer; user-select: none;}
+        .date-text { font-family: 'Space Grotesk'; font-size: 10px; font-weight: 800; color: var(--electric-blue); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
 
-        .container { padding: 0 20px; }
+        .profile-card { padding: 20px; display: flex; align-items: center; justify-content: space-between; }
+        .p-left { display: flex; align-items: center; gap: 15px; }
+        .photo-wrap { width: 60px; height: 60px; border-radius: 20px; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; border: 2px solid var(--electric-blue); }
+        .p-photo { width: 100%; height: 100%; border-radius: 18px; object-fit: cover; }
+        .p-role { font-family: 'Space Grotesk'; font-size: 9px; font-weight: 900; background: var(--electric-blue); color: white; padding: 2px 8px; border-radius: 50px; display: inline-block; margin-bottom: 2px; }
+        .p-name { font-family: 'Outfit'; font-size: 18px; font-weight: 800; color: var(--royal-blue); margin-bottom: 2px; }
+        .p-plat { font-family: 'Inter'; font-size: 11px; font-weight: 600; color: var(--text-muted); }
 
-        /* DASHBOARD INFO BANNERS */
-        .status-panel { display: flex; gap: 10px; margin-bottom: 20px; }
-        .stat-card { flex: 1; background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .sc-title { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px;}
-        .sc-val { font-family: 'Space Grotesk'; font-size: 20px; font-weight: 900; color: var(--text-primary); }
-
-        /* MENU GOD MODE */
-        .menu-title { font-family: 'Space Grotesk'; font-size: 14px; font-weight: 900; color: var(--text-primary); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
-        .menu-title::before { content: ''; width: 4px; height: 16px; background: var(--accent-color); border-radius: 4px; }
-
-        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 25px;}
+        .dash-container { padding: 0 20px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px; }
         
-        .menu-btn { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 20px 15px; display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: 0.3s; cursor: pointer;}
-        .menu-btn:active { transform: scale(0.95); }
-        .menu-btn.kiamat { border-color: var(--danger); background: rgba(239,68,68,0.05); }
+        /* BANNER FC CLONE */
+        .fc-banner { border-radius: 24px; padding: 20px; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, var(--royal-blue) 0%, var(--electric-blue) 100%); color: white; box-shadow: 0 15px 40px rgba(10, 34, 89, 0.1);}
+        .banner-title { font-family: 'Space Grotesk'; font-size: 16px; font-weight: 900; margin-bottom: 6px;}
+        .banner-desc { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.8); }
+        .banner-val { font-family: 'Space Grotesk'; font-size: 30px; font-weight: 900; text-shadow: 0 0 15px rgba(255, 255, 255, 0.4); text-align: right; }
+        .banner-lbl { font-size: 8px; font-weight: 800; color: rgba(255,255,255,0.8); letter-spacing: 1px; margin-top: 4px; text-align: right; }
+
+        /* MENU MEMBER CLONE */
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .menu-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 24px; padding: 20px 15px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: var(--shadow-soft); }
+        .icon-box { width: 50px; height: 50px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 10px; color: white; }
+        .ic-1 { background: linear-gradient(135deg, #60A5FA, #2563EB); }
+        .ic-2 { background: linear-gradient(135deg, #fbbf24, #d97706); }
+        .menu-title { font-family: 'Outfit'; font-size: 13px; font-weight: 800; color: var(--royal-blue); }
+
+        /* ================================== */
+        /* PANEL DEWA SILUMAN (HIDDEN BY DEFAULT) */
+        /* ================================== */
+        #godModePanel { display: none; margin-top: 25px; padding-top: 20px; border-top: 2px dashed var(--danger); animation: fadeInDown 0.3s; }
+        @keyframes fadeInDown { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
         
-        .icon-box { width: 45px; height: 45px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 10px; color: #fff; background: var(--header-grad); box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: 0.4s;}
-        .menu-btn.kiamat .icon-box { background: var(--danger); box-shadow: 0 5px 15px rgba(239,68,68,0.4); }
+        .god-header { display: flex; align-items: center; gap: 8px; font-family: 'Orbitron', 'Space Grotesk'; font-weight: 900; font-size: 16px; color: var(--danger); margin-bottom: 15px; }
         
-        .menu-lbl { font-family: 'Outfit'; font-size: 12px; font-weight: 800; color: var(--text-primary); transition: 0.4s;}
+        .god-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .btn-god { background: white; border: 1px solid var(--danger); border-radius: 16px; padding: 15px; text-align: center; color: var(--danger); font-family: 'Space Grotesk'; font-weight: 800; font-size: 11px; box-shadow: 0 5px 15px rgba(239,68,68,0.1); cursor: pointer; transition: 0.2s; }
+        .btn-god i { font-size: 18px; margin-bottom: 8px; display: block; }
+        .btn-god:active { transform: scale(0.95); }
+        
+        .btn-kiamat { grid-column: span 2; background: var(--danger); color: white; border: none; font-size: 13px; padding: 18px; }
     </style>
 </head>
 <body>
 
     <div id="authScreen">
         <i class="fas fa-fingerprint auth-icon"></i>
-        <h2 class="auth-title">GOD MODE</h2>
-        <div style="color: #64748B; font-size: 12px;">Masukkan Passcode Command Center</div>
+        <h2 class="auth-title">COMMAND CENTER</h2>
+        <div style="color: #64748B; font-size: 12px;">Masukkan Passcode MCC</div>
         <input type="password" id="passInput" class="auth-input" maxlength="8" placeholder="••••••••">
         <button class="auth-btn" onclick="verifyDewa()">AKSES SISTEM</button>
     </div>
 
-    <div class="header-dewa">
+    <div class="dimensi-switch-container">
         <div class="dimensi-switch" onclick="toggleDimensi()">
             <div class="ds-slider"></div>
             <div class="ds-btn">MLU</div>
             <div class="ds-btn">K.C</div>
         </div>
-        
-        <h1 class="dewa-title" id="dewaTitle">MLU MASTER CONTROL</h1>
-        <div class="dewa-subtitle" id="dewaSub">ACTIVE DATABASE: RTOMAKA</div>
     </div>
 
-    <div class="container">
-        
-        <div class="status-panel">
-            <div class="stat-card">
-                <div class="sc-title">Antrean Berjalan</div>
-                <div class="sc-val" id="valAntrean">0 Plat</div>
-            </div>
-            <div class="stat-card">
-                <div class="sc-title">Total Anggota</div>
-                <div class="sc-val" id="valAnggota">0 Akun</div>
+    <div class="dashboard-header">
+        <div class="top-bar">
+            <div>
+                <div class="date-text" id="displayDate">HARI INI</div>
+                <div class="greeting" id="greetingText" onclick="secretTap()">Halo!</div>
             </div>
         </div>
 
-        <div class="menu-title">KENDALI MUTLAK</div>
+        <div class="profile-card glass-panel">
+            <div class="p-left">
+                <div class="photo-wrap"><img src="https://ui-avatars.com/api/?background=2D63ED&color=fff&bold=true&name=DW" class="p-photo"></div>
+                <div>
+                    <div class="p-role">COMMANDER</div>
+                    <div class="p-name">Sang Pengendali</div>
+                    <div class="p-plat" id="lblDatabase">Akses: Database RTOMAKA</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-container">
+        <div class="fc-banner glass-panel">
+            <div>
+                <div class="banner-title"><i class="fas fa-charging-station"></i> <span id="lblFcName">FC KELAPA GADING</span></div>
+                <div class="banner-desc"><i class="fas fa-users"></i> Sedang Antre (Live Clone)</div>
+            </div>
+            <div>
+                <div class="banner-val" id="valAntrean">12</div>
+                <div class="banner-lbl">KENDARAAN</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-container">
         <div class="menu-grid">
-            <a href="#" class="menu-btn" onclick="alert('Bypass Antrean: Segera Hadir')">
-                <div class="icon-box"><i class="fas fa-bolt"></i></div>
-                <div class="menu-lbl">Bypass Antrean</div>
-            </a>
-            <a href="#" class="menu-btn" onclick="alert('Kelola Saldo & Akses: Segera Hadir')">
-                <div class="icon-box"><i class="fas fa-wallet"></i></div>
-                <div class="menu-lbl">Ubah Saldo & Hak</div>
-            </a>
-            <a href="radar_dewa.html" class="menu-btn">
-                <div class="icon-box"><i class="fas fa-crosshairs"></i></div>
-                <div class="menu-lbl">Peta Radar Dewa</div>
-            </a>
-            <a href="mcc_lokasi.html" class="menu-btn">
-                <div class="icon-box"><i class="fas fa-map-marked-alt"></i></div>
-                <div class="menu-lbl">Kelola Lokasi FC</div>
-            </a>
-            <a href="#" class="menu-btn">
-                <div class="icon-box" style="background: #8B5CF6;"><i class="fas fa-bullhorn"></i></div>
-                <div class="menu-lbl">Toa Lintas Dimensi</div>
-            </a>
-            <a href="#" class="menu-btn">
-                <div class="icon-box" style="background: #F59E0B;"><i class="fas fa-gavel"></i></div>
-                <div class="menu-lbl">Pengadilan (Banned)</div>
-            </a>
+            <div class="menu-btn"><div class="icon-box ic-1"><i class="fas fa-users"></i></div><div class="menu-title">Data Anggota</div></div>
+            <div class="menu-btn"><div class="icon-box ic-2"><i class="fas fa-wallet"></i></div><div class="menu-title">Keuangan</div></div>
         </div>
 
-        <div class="menu-title" style="color: var(--danger);">DANGER ZONE</div>
-        <div class="menu-grid" style="grid-template-columns: 1fr;">
-            <a href="#" class="menu-btn kiamat" onclick="globalReset()">
-                <div class="icon-box"><i class="fas fa-skull"></i></div>
-                <div class="menu-lbl" style="color: var(--danger);">GLOBAL RESET (HAPUS SEMUA ANTREAN)</div>
-            </a>
+        <div id="godModePanel">
+            <div class="god-header"><i class="fas fa-eye"></i> PANEL DEWA AKTIF</div>
+            <div class="god-grid">
+                <div class="btn-god" onclick="alert('Bypass Antrean ' + currentMode)"><i class="fas fa-bolt"></i>Bypass Antrean</div>
+                <div class="btn-god" onclick="alert('Edit Saldo ' + currentMode)"><i class="fas fa-coins"></i>Edit Saldo & Hak</div>
+                <div class="btn-god"><i class="fas fa-map-marked-alt"></i>Kelola Lokasi FC</div>
+                <div class="btn-god"><i class="fas fa-gavel"></i>Pengadilan (Banned)</div>
+                <div class="btn-god btn-kiamat" onclick="globalReset()"><i class="fas fa-skull"></i> GLOBAL RESET ANTREAN</div>
+            </div>
         </div>
 
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <script>
+        // === KONFIGURASI TEMA DAN DATABASE ===
+        let currentMode = 'MLU'; // Default
 
-        // === KONFIGURASI DUA DUNIA ===
-        // 1. Config MLU
-        const configMLU = { apiKey: "AIzaSyAk3G5aQUBVe_g7_peVu1F6xllP_RejGq0", authDomain: "rtomaka-e67b5.firebaseapp.com", projectId: "rtomaka-e67b5", storageBucket: "rtomaka-e67b5.firebasestorage.app", messagingSenderId: "472036722228", appId: "1:472036722228:web:11d520f9204db317d02c61" };
-        
-        // 2. Config KC (Sementara pakai ID Gading/Placeholder, nanti tinggal disesuaikan)
-        const configKC = { apiKey: "AIzaSyB666i9lYWIpxOdkwpoX9EvFvHLmHczeq8", authDomain: "fcgadingnew22.firebaseapp.com", projectId: "fcgadingnew22" };
-
-        const appMLU = initializeApp(configMLU, "AppMLU");
-        const dbMLU = getFirestore(appMLU);
-
-        const appKC = initializeApp(configKC, "AppKC");
-        const dbKC = getFirestore(appKC);
-
-        // Variabel penunjuk Database mana yang lagi aktif diolah
-        window.activeDB = dbMLU; 
-        window.currentMode = 'MLU';
-
-        // === FUNGSI SAKLAR DIMENSI ===
         window.toggleDimensi = () => {
-            const body = document.body;
-            const title = document.getElementById('dewaTitle');
-            const sub = document.getElementById('dewaSub');
+            const html = document.documentElement;
+            const lblDB = document.getElementById('lblDatabase');
+            const lblFc = document.getElementById('lblFcName');
 
             if (currentMode === 'MLU') {
-                // PINDAH KE KC
-                body.classList.add('theme-kc');
+                html.classList.add('theme-kc');
                 currentMode = 'KC';
-                activeDB = dbKC;
-                title.innerText = "K.C MASTER CONTROL";
-                sub.innerText = "ACTIVE DATABASE: KARTIKA CHANDRA";
-                console.log("🔥 Beralih ke Database KC");
+                lblDB.innerText = "Akses: Database KARTIKA CHANDRA";
+                lblFc.innerText = "FC KARTIKA CHANDRA";
             } else {
-                // BALIK KE MLU
-                body.classList.remove('theme-kc');
+                html.classList.remove('theme-kc');
                 currentMode = 'MLU';
-                activeDB = dbMLU;
-                title.innerText = "MLU MASTER CONTROL";
-                sub.innerText = "ACTIVE DATABASE: RTOMAKA";
-                console.log("🌊 Beralih ke Database MLU");
+                lblDB.innerText = "Akses: Database RTOMAKA";
+                lblFc.innerText = "FC KELAPA GADING";
             }
-
-            // Panggil ulang fungsi tarik data biar angkanya update sesuai database yang dipilih
-            refreshDashboardData();
+            // Nanti disini masukin kodingan pemanggil data Firebase sesuai Database
+            console.log("Database aktif: " + currentMode);
         }
 
-        // FUNGSI TARIK DATA (Nanti dilengkapin)
-        function refreshDashboardData() {
-            // Animasi loading sederhana
-            document.getElementById('valAntrean').innerText = "...";
-            document.getElementById('valAnggota').innerText = "...";
-            
-            setTimeout(() => {
-                // Di sini nanti kita pasang onSnapshot sesuai activeDB
-                document.getElementById('valAntrean').innerText = currentMode === 'MLU' ? "12 Plat" : "5 Plat";
-                document.getElementById('valAnggota').innerText = currentMode === 'MLU' ? "85 Akun" : "30 Akun";
-            }, 500);
-        }
-
-        // === FUNGSI SECURITY LOCK ===
+        // === SECURITY LOCK DEWA ===
         window.verifyDewa = () => {
             const pin = document.getElementById('passInput').value;
-            if(pin === "250585") { // Ganti password sesuka Bapak
-                sessionStorage.setItem('dewa_auth', 'UNLOCKED');
+            if(pin === "250585") {
+                sessionStorage.setItem('mcc_auth', 'UNLOCKED');
                 document.getElementById('authScreen').style.opacity = '0';
                 setTimeout(() => document.getElementById('authScreen').style.display = 'none', 500);
-                refreshDashboardData();
             } else {
                 alert("⛔ AKSES DITOLAK! KODE SALAH.");
                 document.getElementById('passInput').value = '';
             }
         }
+        if(sessionStorage.getItem('mcc_auth') === 'UNLOCKED') document.getElementById('authScreen').style.display = 'none';
 
-        // Bikin support tombol Enter
-        document.getElementById('passInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') verifyDewa();
-        });
-
-        // Cek kalau udah pernah login sebelumnya
-        if(sessionStorage.getItem('dewa_auth') === 'UNLOCKED') {
-            document.getElementById('authScreen').style.display = 'none';
-            refreshDashboardData();
+        // === STEALTH MODE (DOUBLE TAP) ===
+        let clickCount = 0;
+        window.secretTap = () => {
+            clickCount++;
+            if (clickCount >= 2) {
+                // Munculin atau Sembunyiin Panel Dewa
+                const panel = document.getElementById('godModePanel');
+                if (panel.style.display === 'none' || panel.style.display === '') {
+                    panel.style.display = 'block';
+                } else {
+                    panel.style.display = 'none';
+                }
+                clickCount = 0; // Reset
+            }
+            // Reset ketukan kalau kelamaan (lebih dari 1 detik)
+            setTimeout(() => clickCount = 0, 1000);
         }
 
-        // === GLOBAL RESET KIAMAT ===
+        // Tanggal dinamis
+        document.getElementById('displayDate').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        
         window.globalReset = () => {
-            if(confirm(`⚠️ PERINGATAN KERAS!\nApakah Anda yakin ingin menghapus SEMUA Antrean di markas ${currentMode} saat ini?`)) {
-                alert(`Data antrean ${currentMode} berhasil di-reset!`);
-                // Nanti kita masukin kodingan hapus dokumen Firebasenya disini
-            }
+            if(confirm(`YAKIN HAPUS SEMUA ANTREAN DI ${currentMode}?`)) alert("Dihapus!");
         }
     </script>
 </body>
